@@ -3,14 +3,27 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
+import { copyFileSync, existsSync } from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+const spaFallbackPlugin = () => ({
+  name: 'spa-fallback-plugin',
+  closeBundle() {
+    const indexHtml = resolve(__dirname, 'dist/index.html');
+    const fallbackHtml = resolve(__dirname, 'dist/404.html');
+    if (existsSync(indexHtml)) {
+      copyFileSync(indexHtml, fallbackHtml);
+    }
+  },
+});
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    spaFallbackPlugin(),
   ],
   resolve: {
     alias: {

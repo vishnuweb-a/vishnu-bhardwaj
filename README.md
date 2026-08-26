@@ -252,22 +252,14 @@ than 404ing at runtime, and every file is content-hashed. Never write a raw
 no runtime environment variable - `.env` only feeds the unused scaffold in
 `src/app/config/` and `src/services/`, and nothing from it reaches the bundle.
 
-**The one host-side requirement is an SPA rewrite.** The site uses
+**SPA rewrite support is configured out of the box.** The site uses
 `createBrowserRouter`, so `/project/<slug>` is a real URL with no matching file
-in `dist/`. Without a rewrite that serves `dist/index.html` for any unmatched
-path, deep links and refreshes on a project page return the host's own 404.
-`npm run preview` does this rewrite automatically, which is why it is not
-visible in local testing.
+in `dist/`. SPA routing fallbacks are provided for common static hosts:
 
-Configure it for the chosen host, for example:
-
-- **Netlify** - `public/_redirects` containing `/*  /index.html  200`
-- **Vercel** - `vercel.json` with a rewrite of `/(.*)` to `/index.html`
+- **Netlify / Cloudflare Pages / Render** - `public/_redirects` (`/*  /index.html  200`)
+- **Vercel** - `vercel.json` rewrite (`/(.*)` -> `/index.html`)
+- **GitHub Pages / Static Servers** - `vite.config.js` automatically clones `dist/index.html` to `dist/404.html` on `npm run build`
 - **Nginx** - `try_files $uri $uri/ /index.html;`
-- **GitHub Pages** - copy `dist/index.html` to `dist/404.html` after building
-
-No such file is committed, because the host has not been chosen and guessing one
-would ship dead configuration.
 
 Two further items wait on the deployment domain being known, both marked in
 `index.html`: `og:url` with a `rel="canonical"` link, and an `og:image` (the
