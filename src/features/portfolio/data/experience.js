@@ -1,48 +1,62 @@
 // The inverted panel's two-column rows (design.md section 12).
 //
-// `period` carries what is verifiable from the owner's record rather than an
-// invented date range. Replacing each one with a real dated range is a
-// data-only change - the component reads whatever string it is given.
+// Ordered current-first: the two ongoing roles, then the dated ones in reverse
+// chronological order. `period` carries the real range from the owner's record.
+//
+// `detail` is optional - only the roles with concrete shipped work carry one,
+// and ExperienceRow renders nothing when it is absent.
+//
+// `media` is the hover preview thumbnail. None of these roles has a shipped
+// public interface in src/assets/images, so every row renders the neutral frame
+// carrying the organisation's name, which is the correct state rather than a
+// missing one.
 export const experience = [
   {
-    id: 'ecommerce',
-    organisation: 'Scalable E-commerce Platform',
-    role: 'Backend and deployment engineer',
-    period: 'Production',
+    id: 'orbii',
+    organisation: 'Orbii',
+    role: 'Co-founder',
+    period: '2026 - Present',
+    detail: null,
     media: null,
-    mediaAlt: 'E-commerce platform in production',
+    mediaAlt: 'Orbii',
   },
   {
-    id: 'shipbihar',
-    organisation: 'ShipBihar',
-    role: 'Backend architect',
-    period: 'Independent build',
+    id: 'web-bytes',
+    organisation: 'Web Bytes',
+    role: 'Tech lead',
+    period: 'June 2026 - Present',
+    detail: null,
     media: null,
-    mediaAlt: 'ShipBihar courier aggregation backend',
+    mediaAlt: 'Web Bytes',
   },
   {
-    id: 'mongo-agent-mcp',
-    organisation: 'mongo_agent_mcp',
-    role: 'Package author, published on PyPI',
-    period: 'Open source',
+    id: 'tech-yantra',
+    organisation: 'Tech Yantra',
+    role: 'AI engineer',
+    period: 'August 2026 - November 2026',
+    detail:
+      'Building AI-automated estate software and PETAI, an AI-driven mobile application. Launching soon.',
     media: null,
-    mediaAlt: 'MongoDB MCP server package',
+    mediaAlt: 'Tech Yantra',
   },
   {
-    id: 'open-source',
-    organisation: 'GitHub',
-    role: 'Contributor across full-stack and infrastructure repositories',
-    period: 'Ongoing',
+    id: 'iit-bombay-ecell',
+    organisation: 'IIT Bombay, E-Cell',
+    role: 'Campus ambassador',
+    period: 'May 2026 - August 2026',
+    detail: null,
     media: null,
-    mediaAlt: 'Open source repository activity',
+    mediaAlt: 'IIT Bombay E-Cell',
   },
   {
-    id: 'btech',
-    organisation: 'B.Tech Computer Science Engineering',
-    role: 'Student, backend and systems focus',
-    period: 'In progress',
+    id: 'zidio',
+    organisation: 'Zidio',
+    role: 'Backend developer, internship',
+    period: 'April 2026 - May 2026',
+    detail:
+      'Worked on a distributed video-calling system that scaled to 500 concurrent users, built with Redis, microservices, React, the Gemini API, webhooks and Nginx.',
     media: null,
-    mediaAlt: 'Computer science coursework',
+    mediaAlt: 'Zidio',
   },
 ];
 

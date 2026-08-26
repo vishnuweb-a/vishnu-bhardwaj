@@ -5,6 +5,9 @@ export const profile = {
   lastName: 'Bhardwaj',
   fullName: 'Vishnu Bhardwaj',
   role: 'Backend Developer',
+  // Base document title, and the suffix every route's own title appends to.
+  // index.html carries the same string statically for the first paint.
+  documentTitle: 'Vishnu Bhardwaj - Backend Developer',
   // Two lines in the hero, matching the reference's role block.
   intro:
     'Building production REST APIs, distributed systems and AI-integrated platforms that hold up under real traffic.',

@@ -24,8 +24,8 @@ Precedence when rules collide:
 
 Never rename, move, edit, overwrite, delete or re-encode anything in
 `inspiration/`. Never use a file from `inspiration/` as a site asset — copy
-nothing from it into `public/` or `src/assets/`. It is measurement material
-only.
+nothing from it into `information/source-assets/` or `src/assets/`. It is
+measurement material only.
 
 The video file is `portfolio.annimation.mp4` (double `n`). Do not "fix" the name.
 
@@ -300,6 +300,80 @@ why.
 
 Update [plan.md](plan.md) checkboxes to reflect what actually happened. Report
 failures with their output. State plainly what was not verified.
+
+---
+
+## Rule 21 — Real media is derived, never served raw
+
+The owner's originals live in `information/source-assets/` and are the source of
+truth. They are never modified, renamed, deleted or referenced directly by the
+application.
+
+Everything the site ships is a derivative written by `scripts/build-assets.py`
+into `src/assets/images/` and imported through
+`src/features/portfolio/data/`. That gives content hashing, keeps a missing
+asset a build failure rather than a runtime 404, and keeps ~10 MB of source PNG
+off the wire.
+
+The originals are **not** in `public/`, and nothing that is not requested by a
+literal path should be. Vite copies `public/` verbatim into `dist/`, so an
+original parked there ships on every deploy whether or not a page asks for it
+(Phase 4: this alone was 92 percent of the build). `public/` holds `favicon.svg`
+and `robots.txt`, and nothing else.
+
+When new media arrives:
+
+```
+drop the original into information/source-assets/
+     v
+add it to scripts/build-assets.py
+     v
+run python scripts/build-assets.py
+     v
+import the derivative in the relevant data file
+```
+
+Never add a raw `/something.png` path to JSX or to a data file.
+
+---
+
+## Rule 22 — Map assets to content only on evidence
+
+An asset is wired to a project, service or role only when the record supports
+it. Where the mapping is an inference, say so in the data file's comments and in
+[plan.md](plan.md), and keep the inference to attaching media to an entry that
+already exists - never invent an entry to hold an orphan asset.
+
+Where no asset exists for a slot, do not fill it with a borrowed screenshot or a
+stock photograph. A card in Selected Work reads as a picture of the thing that
+was built, so an unrelated image there is a claim about the work, not decoration.
+Render `ProjectCover` - built from the project's own name and stack - or keep the
+neutral `MediaFrame` carrying the subject's name.
+
+Where an asset's shape does not suit its frame, fix it in
+`scripts/build-assets.py` by composing a derivative at the frame's ratio. Do not
+tune `object-position` to hide a bad crop: if the subject has to be sliced to
+fit, the derivative is wrong, not the CSS.
+
+The same standard applies to links. Every outbound URL is checked before it
+ships; a repository that 404s unauthenticated is private or unpushed, and the
+entry ships with `liveUrl: null` rather than with a dead button.
+
+---
+
+## Rule 23 — A real photograph is a layout constraint
+
+The neutral placeholder was a light block that text could sit over. A
+photograph is not.
+
+Any text, control or pill that could land over the portrait must be measured
+clear of it at every breakpoint, not eyeballed. Where the two cannot both fit,
+narrow the text or move the image out of the absolute layer - never rely on a
+scrim, a gradient or a backdrop that the reference does not have.
+
+A colour photograph is also the only saturated element on a monochrome page.
+Desaturate it into the palette (Rule 2) rather than letting it become the loudest
+thing on the screen.
 
 ---
 

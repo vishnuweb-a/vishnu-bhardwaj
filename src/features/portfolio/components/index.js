@@ -7,6 +7,7 @@ export { SocialRail } from './SocialRail';
 export { ProjectsSection } from './ProjectsSection';
 export { ProjectFilters } from './ProjectFilters';
 export { ProjectCard } from './ProjectCard';
+export { ProjectCover } from './ProjectCover';
 export { ServicesSection } from './ServicesSection';
 export { ServiceRow } from './ServiceRow';
 export { ExperienceSection } from './ExperienceSection';

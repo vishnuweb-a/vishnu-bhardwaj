@@ -38,7 +38,13 @@ export const Hero = () => {
         variant="base"
         className="relative z-20 mt-auto flex flex-col gap-10 pt-16 lg:flex-row lg:items-end lg:justify-between lg:gap-16"
       >
-        <div data-hero-role className="max-w-[380px]">
+        {/* The measure narrows at lg and above so the intro clears the
+            portrait's shoulder line instead of running under it. The reference
+            sets this block at roughly 350px against a narrower cutout. */}
+        <div
+          data-hero-role
+          className="max-w-[380px] lg:max-w-[260px] xl:max-w-[300px]"
+        >
           <h2 className="font-body text-[clamp(1.5rem,2.2vw,2rem)] leading-tight font-semibold text-ink">
             {profile.role}
           </h2>

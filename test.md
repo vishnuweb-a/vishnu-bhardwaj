@@ -322,6 +322,107 @@ Run after any change to a shared primitive or the animation layer.
 
 ---
 
+## 10a. Asset and Content Tests
+
+Added after the owner's real media and content landed. The originals live in
+`information/source-assets/` and are never served; run these whenever an asset
+or a data file changes.
+
+| # | Check | Method | Expected |
+|---|---|---|---|
+| A1 | Every referenced asset resolves | Load both routes and read `document.images`; assert `complete && naturalWidth > 0` for every image with a non-zero box | No broken image at any viewport |
+| A2 | No 4xx on any request | CDP `Network.responseReceived` over a full route and viewport sweep | Zero responses >= 400 |
+| A3 | Derivatives are current | `python scripts/build-assets.py`, then `git status` | No unexpected diff under `src/assets/images/` |
+| A4 | Shipped image weight | Read the Vite build output | Total emitted image bytes stay under ~500 KB |
+| A5 | Outbound links resolve | `curl -sL -o /dev/null -w '%{http_code}'` on every URL in `data/` | 200, or the entry carries `liveUrl: null` |
+| A6 | No placeholder copy | `grep -rniE "todo\|lorem\|dummy\|example\.com\|placeholder\|pending"` over `src/` | No match in shipped strings |
+| A7 | Neutral frames are labelled | Render a project with `thumbnail: null` | Frame carries the project's name, not a "pending" label |
+| A8 | Text never sits over the portrait | Measure `[data-hero-role]` right edge against `[data-hero-portrait] img` left edge at 1024, 1280 and 1440 | Role block right edge is left of the portrait box |
+| A9 | Detail media shows the whole capture | Load a detail route with a tall device capture | `object-fit: contain`; the full screen is visible and undistorted |
+| A10 | Entrance order survives asset changes | Sample `opacity` per animation frame for the five hero targets | nav ~0 ms, wordmark ~200 ms, role and rail ~580 ms, portrait ~1150 ms |
+
+**Note on A1.** Images inside a collapsed accordion panel or a `hidden`
+breakpoint variant report `naturalWidth === 0` because the browser never fetches
+them. That is correct lazy behaviour, not a failure - the assertion only applies
+to images with a non-zero bounding box.
+
+**Tooling.** No ffmpeg and no Puppeteer are installed. The reference video is
+decoded by loading it into the headless browser and drawing seeked frames to a
+canvas; the browser itself is driven over the DevTools Protocol through Node's
+built-in `WebSocket`. Both are viable substitutes and neither adds a dependency.
+
+---
+
+## 10b. Production Hardening Tests
+
+Added in Phase 14. Unlike every other section here, these run against the
+**production build** (`npm run build` then `npm run preview`), not the dev
+server — several of them can only fail in a production bundle.
+
+### Build output
+
+| # | Check | Method | Expected |
+| --- | --- | --- | --- |
+| P1 | No source original ships | `find dist -name '*.png'` | Only files the browser requests by literal path; **no capture or portrait original** |
+| P2 | `public/` holds only served files | `ls public/` | `favicon.svg` and `robots.txt`, nothing else |
+| P3 | Derivatives unchanged by a pipeline edit | `md5sum src/assets/images/*.webp` before and after `python scripts/build-assets.py` | Byte-identical; a path change must not re-encode a pixel |
+| P4 | `dist/` weight | `du -sb dist` | Under ~1 MB; a jump means something entered `public/` |
+| P5 | Chunks match config | Read the build output | `vendor`, `router`, `animation`, `index`, `ProjectDetail`; no chunk-size warning |
+| P6 | No secret, no dev URL | `grep -r "localhost\|127.0.0.1\|API_KEY\|SECRET\|TOKEN" dist/` | Only third-party library internals; nothing of ours |
+
+### Runtime, on the production build
+
+| # | Check | Method | Expected |
+| --- | --- | --- | --- |
+| P7 | Zero `.png` requests | CDP `Network.responseReceived` across every route | No response URL ends `.png` |
+| P8 | Console is clean | CDP `Runtime.consoleAPICalled`, `Runtime.exceptionThrown`, `Log.entryAdded` per route, per viewport, before and after a full scroll | Zero entries. Never suppress — fix the cause |
+| P9 | Lazy images all resolve | Scroll the full page, then assert `complete && naturalWidth > 0` for every image with a non-zero box | Zero broken (see the 10a A1 note on collapsed panels) |
+| P10 | Hero portrait is not lazy | Read `loading` and `fetchpriority` on `[data-hero-portrait] img` | `eager` and `high` — it is on the LCP path |
+| P11 | Unknown slug degrades | Load `/no-such-page` and an unknown project slug | `NotFound` renders with one `h1` and its own title; no crash |
+
+### Metadata
+
+| # | Check | Method | Expected |
+| --- | --- | --- | --- |
+| P12 | Per-route document title | Navigate each route and read `document.title` | Three distinct titles; a project route names the project (WCAG 2.4.2) |
+| P13 | Social metadata is honest | Read `index.html` | `og:*` and `twitter:*` present; **no `og:url`, `canonical` or `og:image`** while the deployment domain is unknown — a fabricated URL is worse than an absent tag |
+
+### Accessibility, measured rather than eyeballed
+
+| # | Check | Method | Expected |
+| --- | --- | --- | --- |
+| P14 | Contrast | Compute the WCAG ratio for every distinct text-on-background pair, resolving alpha up the ancestor chain | Zero pairs below 4.5:1 body / 3:1 large |
+| P15 | Focus is visible under real keyboard focus | Tab with synthesised key events; at each stop read computed `outline` and `box-shadow` | Every stop shows an indicator. **Do not test with `el.focus()`** — programmatic focus does not reliably match `:focus-visible` and reports false failures |
+| P16 | No keyboard trap | Tab through the whole route | Focus wraps to the document; every stop is reachable and leavable |
+| P17 | Skip link is usable when focused | Tab once, measure the focused rect | At least 44 px tall. `not-sr-only` resets `padding`, so the box has to be restated under the `focus:` variant |
+| P18 | Touch targets | Measure every interactive rect at 768 / 430 / 375 | At least 44 × 44 where touch applies. Desktop-only nav links at ≥1024 are mouse targets and need only WCAG 2.5.8's 24 × 24 |
+| P19 | Mobile disclosure | At 430 px: open, read `inert` and `aria-expanded`, press Escape | `inert` while closed; Escape closes it and returns focus to the trigger |
+
+### Motion
+
+| # | Check | Method | Expected |
+| --- | --- | --- | --- |
+| P20 | Reduced motion strands nothing | Force `prefers-reduced-motion: reduce` at the browser, scroll both routes fully, then assert no element carrying text or an image sits at opacity < 0.05 or translated > 8 px | Zero stranded elements; zero infinite animations |
+| P21 | Reduced motion disables Anime.js, not just CSS | Confirm every hook returns before `createScope` | No scope is created at all |
+| P22 | Pointer-follow does not thrash | Patch `Element.prototype.getBoundingClientRect` to count calls, then sweep a synthesised pointer across a row | 1 read on `pointerenter`, **0** across subsequent moves |
+| P23 | Pointer-follow does not re-render | `MutationObserver` for non-`style` mutations during the sweep | Zero |
+| P24 | Coarse pointers are gated out | Emulate touch at 430 px | `(hover: hover) and (pointer: fine)` is false; no listener is bound; followers stay at opacity 0 |
+
+### Regression
+
+| # | Check | Method | Expected |
+| --- | --- | --- | --- |
+| P25 | Container widths survive optimisation | Measure the four `Container` variants at 1440 | 1280 / 1216 / 1104 / 1408, gutter 80, grid gap 56 |
+| P26 | Card grid stays uniform after a copy change | Measure every project card box and title line count | All identical; a title that wraps to a second line is a layout change, not a copy change |
+| P27 | Entrance order survives | Sample the five hero targets per frame | nav → wordmark → role + rail → portrait, with elements in their authored final state until their tween starts |
+
+**Deployment note.** `npm run preview` rewrites unmatched paths to
+`index.html`, so SPA deep links always pass locally. That is a property of the
+preview server, not of the build — the host needs its own rewrite or
+`/project/<slug>` returns a 404 in production. See README.md § Deployment.
+
+---
+
 ## 11. Final Acceptance Criteria
 
 The reconstruction is accepted when all of the following hold:
@@ -342,3 +443,6 @@ The reconstruction is accepted when all of the following hold:
 - [ ] All reference content has been replaced with the owner's real content
 - [ ] [plan.md](plan.md) checkboxes reflect reality, with deferrals stated
 - [ ] Anything not verified is stated plainly as not verified
+- [ ] Section 10b passes against the **production build**, not the dev server
+- [ ] The host's SPA rewrite is configured, so `/project/<slug>` survives a
+      refresh and a deep link

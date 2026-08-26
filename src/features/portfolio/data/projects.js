@@ -1,3 +1,18 @@
+// Two derivatives per capture (scripts/build-assets.py): `Card` is the 16:9
+// composition with the device whole on its own ground, for the card, service
+// and experience frames; `Shot` is the capture itself, shown complete on the
+// detail route.
+import shipBiharCard from '@/assets/images/ship-bihar-card.webp';
+import shipBiharShot from '@/assets/images/ship-bihar.webp';
+import yarnviaCard from '@/assets/images/yarnvia-card.webp';
+import yarnviaShot from '@/assets/images/yarnvia.webp';
+import fossClubCard from '@/assets/images/foss-club-card.webp';
+import fossClubShot from '@/assets/images/foss-club.webp';
+import furnitureCard from '@/assets/images/furniture-card.webp';
+import furnitureShot from '@/assets/images/furniture.webp';
+import expenseTrackerCard from '@/assets/images/expense-tracker-card.webp';
+import expenseTrackerShot from '@/assets/images/expense-tracker.webp';
+
 // Project records. Adding, removing or reordering an entry here changes the
 // grid, the filters, the nav counter, the detail routes and /MORE WORK with no
 // JSX edit anywhere (rule.md Rule 8, test.md section 10).
@@ -14,10 +29,46 @@
 //   service     what the work actually was
 //   role        how it was worked on
 //   tools       renders as the small tile row in the detail meta stack
-//   thumbnail   card image; null renders a neutral frame at the right ratio
-//   images      the detail page's stacked media frames
+//   thumbnail   the 16:9 card composition; null renders ProjectCover instead
+//   images      the detail page's stacked media frames; each entry may set
+//               `fit`, because every capture supplied so far is a tall device
+//               frame that has to be contained rather than cropped at 4:3
 //   caption     the detail page's closing note
 //   liveUrl     omitted where there is no public destination
+//
+// Five of the ten carry a real capture from information/source-assets/. The
+// other five have no interface capture on record: their cards render
+// ProjectCover, a typographic cover built from the project's own name and
+// stack, and their `images` arrays stay empty. Neither borrows another
+// project's screenshot, and neither uses a stock photograph - a card in
+// Selected Work reads as a picture of the thing that was built.
+//
+// Curation, reviewed and re-confirmed in Phase 4. Three things are deliberately
+// absent from this array, and each is a decision rather than an oversight:
+//
+//   ats.png - an ATS Kingston Heath site-visit enquiry page. It matches the
+//     Real_Estate_Agent repository, which information/project.js files under
+//     `projectUnderDevelopment` alongside a second contributor and with no tech
+//     stack recorded. Under development, collaborative, and with no shipped
+//     status establishable from any source: all three of the brief's exclusion
+//     conditions hold, so it is not presented here. Selected Work has no
+//     in-progress state to put it in either - the badge vocabulary the
+//     reference establishes is 'Real Project' and 'Exploration', both of which
+//     read as finished, and inventing a third would be inventing design. Adding
+//     one is a design.md change first, a data change second.
+//
+//   petai - excluded for the same reason: `projectUnderDevelopment`, with a
+//     second contributor.
+//
+//   FastAPI Authentication Microservice, Smart Queue Management System and
+//     Kids Garden - on the resume, absent here. Not for want of a capture:
+//     Code RAG, Deploy Platform and ORBII have none either and ship on
+//     ProjectCover. The reason is curation. The reference grid presents a
+//     chosen subset, this array is already ten against its four, and the three
+//     omitted are backend services whose territory - JWT/RBAC auth, Redis
+//     queueing, FastAPI CRUD - is already represented by ShipBihar and Code
+//     RAG. Adding them would lengthen the grid without widening it. They are a
+//     data-only change if the owner wants them.
 
 export const PROJECT_CATEGORIES = ['All', 'Real Project', 'Exploration'];
 
@@ -35,34 +86,58 @@ export const projects = [
     service: 'Backend architecture, payments, async pipeline',
     role: 'Sole backend engineer',
     tools: ['Node.js', 'Express', 'MongoDB', 'Redis', 'RabbitMQ', 'Razorpay'],
-    thumbnail: null,
+    thumbnail: shipBiharCard,
     thumbnailAlt: 'ShipBihar shipment booking interface',
     images: [
-      { src: null, alt: 'ShipBihar rate aggregation and AWB generation flow' },
-      { src: null, alt: 'ShipBihar wallet and transaction history screen' },
+      {
+        src: shipBiharShot,
+        alt: 'ShipBihar home screen on mobile, showing the courier booking entry point',
+        fit: 'contain',
+      },
     ],
     caption:
       'The interesting problem was reconciliation: payments, provider responses and shipment status all arrive at different times, so the wallet and the queue had to agree on a single source of truth.',
     liveUrl: 'https://github.com/vishnuweb-a/aggregator-software',
   },
   {
+    // Classification checked in Phase 4. The capture itself settles the
+    // category: information/source-assets/yarnvia.png is an apparel storefront
+    // under the Yarnvia wordmark - search, Shop All / Men / Women / Children,
+    // a featured collection, a cart with a count, and a Home/Shop/Orders/Cart
+    // tab bar. It is an e-commerce front end on the evidence, not on a
+    // resemblance.
+    //
+    // What remains an inference is the linkage: the resume records exactly one
+    // e-commerce project ('Scalable E-commerce Platform - Production
+    // Application', ~1,000 requests/hour, a reported 20 percent growth
+    // improvement) and the owner supplied exactly one e-commerce capture, and
+    // no source names the two together - Yarnvia does not appear in
+    // information/project.js at all. Pairing them is the only reading the two
+    // sources allow, so the record's own title and figures are kept verbatim
+    // and the product is named as the capture names it. Nothing here is
+    // invented; if Yarnvia is a different storefront, this entry's title and
+    // figures are what need correcting (rule.md Rule 22).
     slug: 'scalable-ecommerce-platform',
-    name: 'E-commerce Platform',
-    title: 'Scalable E-commerce Platform',
+    name: 'Yarnvia',
+    title: 'Yarnvia - Scalable E-commerce Platform',
     category: 'Real Project',
     tags: ['Production', 'Infrastructure'],
     summary:
-      'A production storefront handling roughly a thousand requests an hour, deployed and maintained end to end.',
+      'A production apparel storefront handling roughly a thousand requests an hour, deployed and maintained end to end.',
     description:
       'A commerce application taken from local development to a live host: application code, hosting, domain and DNS configuration, and the production environment around it. It sustained approximately 1,000 requests per hour and the work contributed to a reported 20 percent growth improvement.',
     service: 'Application work, deployment, production infrastructure',
     role: 'Developer and operator',
     tools: ['Node.js', 'MongoDB', 'Nginx', 'Linux', 'DNS'],
-    thumbnail: null,
-    thumbnailAlt: 'E-commerce platform storefront',
+    thumbnail: yarnviaCard,
+    thumbnailAlt:
+      'Yarnvia storefront on mobile, showing search, category navigation and a featured collection',
     images: [
-      { src: null, alt: 'E-commerce platform catalogue and checkout flow' },
-      { src: null, alt: 'Production hosting and domain configuration' },
+      {
+        src: yarnviaShot,
+        alt: 'Yarnvia home screen with search, category navigation, a featured collection and the cart',
+        fit: 'contain',
+      },
     ],
     caption:
       'Most of the value here was operational rather than architectural - knowing what breaks after deployment is a different skill from getting it working locally.',
@@ -80,13 +155,18 @@ export const projects = [
       'SentinelMind records decisions and their reasoning, then reads them back with context. It is a Next.js application over Supabase and Postgres, with Google Gemini handling the analysis pass and Recharts rendering the trends.',
     service: 'Product engineering, data model, model integration',
     role: 'Sole developer',
-    tools: ['Next.js', 'TypeScript', 'Supabase', 'Postgres', 'Gemini'],
+    tools: [
+      'Next.js',
+      'TypeScript',
+      'Tailwind CSS',
+      'Supabase',
+      'Postgres',
+      'Recharts',
+      'Gemini',
+    ],
     thumbnail: null,
     thumbnailAlt: 'SentinelMind decision dashboard',
-    images: [
-      { src: null, alt: 'SentinelMind decision timeline view' },
-      { src: null, alt: 'SentinelMind analysis and trend charts' },
-    ],
+    images: [],
     caption:
       'The hard part was not the model call - it was designing a schema that keeps a decision, its context and its outcome linked well enough to be worth reviewing later.',
     liveUrl: 'https://github.com/vishnuweb-a/hindsight-mvp',
@@ -103,16 +183,81 @@ export const projects = [
       'Nycom is a React and Vite application backed by Supabase, with Zod validating every form boundary and Cloudinary handling media transforms and delivery. It runs across Vercel and Hostinger with its own domain configuration.',
     service: 'Frontend architecture, content pipeline, deployment',
     role: 'Sole developer',
-    tools: ['React', 'TypeScript', 'Vite', 'Supabase', 'Cloudinary'],
+    tools: [
+      'React',
+      'TypeScript',
+      'Vite',
+      'Tailwind CSS',
+      'Zod',
+      'Supabase',
+      'Cloudinary',
+    ],
     thumbnail: null,
     thumbnailAlt: 'Nycom studio landing page',
-    images: [
-      { src: null, alt: 'Nycom portfolio and media gallery' },
-      { src: null, alt: 'Nycom content administration screen' },
-    ],
+    images: [],
     caption:
       'Validating at the edges with Zod meant the Supabase layer could stay thin, and the media pipeline never had to guess what it was being handed.',
     liveUrl: 'https://github.com/vishnuweb-a/nycom',
+  },
+  {
+    slug: 'foss-club-website',
+    name: 'FOSS Club',
+    title: 'FOSS Club - Open Source Community Site',
+    category: 'Real Project',
+    tags: ['Frontend', 'Community'],
+    summary:
+      'A site for an open source club, built around a four-step path from first contribution onwards.',
+    description:
+      'A community site for a free and open source software club. The landing view is set in a terminal idiom - monospaced, bracketed, over a dark field - and lays the club out in four numbered steps: learn the foundations, build something real, contribute in public, grow together. It is a React 19 application on Vite, typed throughout, with Tailwind CSS 4 for the interface.',
+    service: 'Frontend architecture and interface build',
+    role: 'Sole developer',
+    tools: ['React 19', 'TypeScript', 'Vite', 'Tailwind CSS 4'],
+    thumbnail: fossClubCard,
+    thumbnailAlt:
+      'FOSS Club landing view with its terminal-styled introduction',
+    images: [
+      {
+        src: fossClubShot,
+        alt: 'FOSS Club landing view on mobile, showing the four-step introduction',
+        fit: 'contain',
+      },
+    ],
+    caption:
+      'The terminal framing does real work here: a club that asks people to contribute in public reads better in the idiom its members already write in.',
+    // information/project.js lists https://github.com/vishnuweb-a/Foss-webpage-
+    // for this repository, but it returns 404 unauthenticated - it is private or
+    // not yet pushed. Shipping it would be a dead Live Preview button, so the
+    // project renders without one until the repository is public.
+    liveUrl: null,
+  },
+  {
+    slug: 'furniture-display',
+    name: 'Furniture Display',
+    title: 'Furniture Display - Product Landing Page',
+    category: 'Real Project',
+    tags: ['Frontend', 'Landing Page'],
+    summary:
+      'A single-page storefront for a furniture maker, routed to WhatsApp and a phone call rather than a checkout.',
+    description:
+      'A landing page for a furniture business selling bunk beds, single beds, study tables, desk benches and writing chairs into homes, hostels and classrooms. There is no cart: the page carries a persistent contact bar so an enquiry goes straight to WhatsApp or a phone call, which is how the business actually takes orders.',
+    service: 'Landing page build and enquiry flow',
+    role: 'Sole developer',
+    tools: ['Python', 'JavaScript', 'CSS'],
+    thumbnail: furnitureCard,
+    thumbnailAlt:
+      'Furniture landing page with its product headline and enquiry bar',
+    images: [
+      {
+        src: furnitureShot,
+        alt: 'Furniture landing page on mobile, showing the headline and the persistent enquiry bar',
+        fit: 'contain',
+      },
+    ],
+    caption:
+      'Skipping the checkout was the right call. The shortest path to a sale here is a message, so the whole page is arranged to produce one.',
+    // Same as FOSS Club: the repository URL on record 404s unauthenticated, so
+    // no Live Preview button is rendered.
+    liveUrl: null,
   },
   {
     slug: 'github-code-rag',
@@ -129,10 +274,7 @@ export const projects = [
     tools: ['FastAPI', 'ChromaDB', 'Ollama', 'Qwen2.5-Coder'],
     thumbnail: null,
     thumbnailAlt: 'Code retrieval query results',
-    images: [
-      { src: null, alt: 'Repository indexing and chunking pipeline' },
-      { src: null, alt: 'Semantic code search response' },
-    ],
+    images: [],
     caption:
       'Chunk boundaries decided the quality of every answer. Splitting on syntax rather than line count was the change that made retrieval usable.',
     liveUrl: null,
@@ -152,10 +294,7 @@ export const projects = [
     tools: ['Node.js', 'Ubuntu', 'Docker', 'AWS EC2', 'SSH'],
     thumbnail: null,
     thumbnailAlt: 'Deployment platform instance list',
-    images: [
-      { src: null, alt: 'Repository clone and provisioning flow' },
-      { src: null, alt: 'Reverse proxy and port assignment configuration' },
-    ],
+    images: [],
     caption:
       'Building this was the fastest way to understand what a platform-as-a-service is actually doing between a git push and a live URL.',
     liveUrl: null,
@@ -175,10 +314,7 @@ export const projects = [
     tools: ['Python', 'FastAPI', 'MFCC', 'Spectrograms'],
     thumbnail: null,
     thumbnailAlt: 'Keyword detection spectrogram view',
-    images: [
-      { src: null, alt: 'MFCC feature extraction pipeline' },
-      { src: null, alt: 'Real-time detection stream output' },
-    ],
+    images: [],
     caption:
       'Latency, not accuracy, was the constraint. A model that is right two seconds late is not useful for an emergency phrase.',
     liveUrl: null,
@@ -192,15 +328,19 @@ export const projects = [
     summary:
       'A React Native expense tracker built with Expo Router and typed end to end.',
     description:
-      'A mobile expense tracker built on React Native and Expo, with Expo Router handling navigation and TypeScript covering the data model. Built to learn where mobile state and persistence differ from the web.',
+      'A mobile expense tracker built on React Native and Expo, with Expo Router handling navigation and TypeScript covering the data model. The home view carries the month balance, income and expense totals, a spend breakdown by category and a recent transaction list.',
     service: 'Mobile application, navigation, local persistence',
     role: 'Sole developer',
     tools: ['React Native', 'Expo', 'TypeScript', 'Expo Router'],
-    thumbnail: null,
-    thumbnailAlt: 'Expense tracker summary screen',
+    thumbnail: expenseTrackerCard,
+    thumbnailAlt:
+      'Expense tracker home screen with the month balance and recent transactions',
     images: [
-      { src: null, alt: 'Expense entry and category screens' },
-      { src: null, alt: 'Monthly spending summary view' },
+      {
+        src: expenseTrackerShot,
+        alt: 'Expense tracker home screen showing balance, category breakdown and recent transactions',
+        fit: 'contain',
+      },
     ],
     caption:
       'Expo Router made the navigation tree readable, which mattered more than expected once the app had more than four screens.',

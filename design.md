@@ -340,7 +340,42 @@ Full-viewport (`min-h-[100dvh]`) three-band composition:
 
 ### Interaction clues
 
-- No hover state is observable on any hero element. **NOT OBSERVED.**
+- **Portrait colour wipe — the hero's one hover state.** The cutout renders
+  desaturated. When the cursor enters it, a full-colour copy is uncovered by a
+  hard vertical edge that trails the pointer's x: everything right of the edge
+  is in colour, everything left of it stays desaturated. **[measured]**
+  - The edge is vertical and full-height. Per-row leftmost coloured pixel at
+    t=3.30 is 720 / 720 / 742 across the face band — one straight boundary.
+  - It does not snap to the cursor. With the pointer parked at x≈650 the edge
+    walked 920 → 652 px between t=3.117 and t=3.633, each 16 ms frame closing
+    ≈15 % of the remaining gap. That is an exponential settle (τ ≈ 100 ms,
+    ~520 ms to rest), not a linear sweep — the same damped follow the project
+    card and experience thumbnail use.
+  - On entry the edge starts closed at the cutout's right rim and eases left to
+    the pointer; the first coloured pixels appear at x=920, near that rim.
+  - On exit it is a **single-frame cut**, not a retraction: t=3.950 is fully
+    coloured, t=3.967 is fully desaturated, with no intermediate edge position.
+    **[measured]**
+  - **Shipped behaviour is generalised past the reference, by instruction.**
+    The recording only ever enters the cutout from the right, so it only ever
+    shows a vertical edge sweeping left. The implementation measures which edge
+    the pointer actually crossed and applies the same rule from all four:
+    colour fills the span between the entry edge and the pointer, on a vertical
+    boundary for left/right entry and a horizontal one for top/bottom. Verified
+    in Chromium at 1440x900 - pointer at x=783 colours x 782..1058 (from the
+    right), at x=721 colours x 445..721 (from the left), at y=537 colours
+    y 347..537 (from the top), at y=861 colours y 861..899 (from the bottom).
+  - The lower content band and the wordmark sit at z-20 over the portrait's
+    z-10, so the cutout is only reachable across the face and a strip at its
+    foot. That is existing stacking and is left alone; the reference hovers the
+    face too.
+  - The reference swaps in a *different photograph* for the colour layer — the
+    subject wears glasses in it and not in the desaturated one. Only one
+    portrait exists in the source assets, so the implementation reveals the same
+    file in
+    colour. The wipe mechanic is reproduced; the wardrobe change is not, for
+    want of a second frame.
+- No other hover state is observable on any hero element. **NOT OBSERVED.**
 - The availability dot is static in the reference; no pulse is visible.
   **NOT OBSERVED** — do not add one.
 
@@ -853,25 +888,108 @@ Beyond CLAUDE.md §10, this design creates specific obligations:
 Prefer existing project assets; do not generate images unnecessarily
 (CLAUDE.md §11 Tier 3).
 
-| Asset                       | Status      | Strategy                                                                                                                                             |
-| --------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Portrait cutout             | **Missing** | Owner-supplied. Background-removed PNG/WebP, ~1200 px tall, desaturated. Blocks the hero.                                                            |
-| Project screenshots (4+)    | **Missing** | Owner-supplied, one per project, plus full-page shots for the detail view.                                                                           |
-| Service media samples       | **Missing** | Owner-supplied, one per service.                                                                                                                     |
-| Experience hover thumbnails | **Missing** | Owner-supplied, one per role.                                                                                                                        |
-| Contact cloud background    | **Missing** | Owner-supplied photo, or a CSS approximation. A soft high-key sky is not reproducible in CSS at acceptable fidelity; prefer a real, optimised image. |
-| Avatar (footer pill)        | **Missing** | Crop of the portrait.                                                                                                                                |
-| Social / tool icons         | Buildable   | **Inline SVG components.** No icon package (CLAUDE.md §18).                                                                                          |
-| `↗`, `←`, `×` glyphs        | Buildable   | Inline SVG, shared stroke width, `aria-hidden`.                                                                                                      |
+| Asset                       | Status                     | Strategy                                                                                                                                            |
+| --------------------------- | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Portrait cutout             | **Supplied** (Phase 3)     | `information/source-assets/portfolio-image.png`, a background-removed full-body PNG. Cropped to head, shoulders and upper chest and re-encoded as WebP. |
+| Project screenshots         | **Supplied for 5 of 10**   | Five tall device captures in `information/source-assets/`. The other five projects have no capture on record and keep the neutral frame.             |
+| Service media samples       | **Substituted** (Phase 3)  | No service imagery exists. Each panel shows a shipped project that exercises that service; the card is decorative and `aria-hidden`.                 |
+| Experience hover thumbnails | **Supplied for 2 of 5**    | The two entries with a shipped interface use its capture; the other three keep the neutral frame carrying the organisation's name.                   |
+| Contact cloud background    | **Still missing**          | No sky or cloud asset was supplied. The `.sky-wash` CSS approximation in `src/styles/index.css` remains in place.                                    |
+| Avatar (footer pill)        | **Derived** (Phase 3)      | Square face crop of the portrait, flattened onto the pill's own fill so no transparent halo shows.                                                   |
+| Social / tool icons         | Buildable                  | **Inline SVG components.** No icon package (CLAUDE.md §18).                                                                                          |
+| `↗`, `←`, `×` glyphs        | Buildable                  | Inline SVG, shared stroke width, `aria-hidden`.                                                                                                     |
+
+### 20.1 The derivation pipeline (Phase 3)
+
+The owner's originals arrived as seven PNGs totalling roughly 10 MB, the hero
+cutout alone being 1.9 MB. Serving them directly would have put that on the LCP
+path, so `scripts/build-assets.py` derives one WebP per original into
+`src/assets/images/`:
+
+```
+information/source-assets/*.png  (source of truth, never modified, never served)
+      |
+      v  scripts/build-assets.py  (Pillow)
+      |
+src/assets/images/*.webp  (~390 KB total)
+      |
+      v  imported by src/features/portfolio/data/assets.js, projects.js,
+         services.js, experience.js
+      |
+      v  Vite fingerprints and emits them
+```
+
+Two derivatives are made per screenshot:
+
+| Derivative | Size | Used by |
+|---|---|---|
+| `<name>.webp` | source pixels | the detail route, shown whole at `contain` |
+| `<name>-card.webp` | 1280 x 720 | card, service and experience frames, at `cover` |
+
+Screenshots keep their source pixel dimensions in the first derivative - the
+largest on-page use is the detail frame at roughly 460 x 830 CSS px, so the
+source doubles as the 2x asset. The portrait is cropped before encoding.
+
+Importing through the data layer rather than referencing `/public` URLs means a
+missing asset fails the build instead of 404ing at runtime, and every file is
+content-hashed.
+
+The originals started out in `public/` and were moved to
+`information/source-assets/` in Phase 4. Vite copies `public/` verbatim into
+`dist/`, so all 10 MB shipped on every deploy despite no page ever requesting
+them; the move cut `dist/` from 10.4 MB to 0.87 MB and left every derivative
+byte-identical (verified by checksum). `public/` now holds `favicon.svg` and
+`robots.txt` only.
+
+### 20.2 Fit and composition
+
+Every capture supplied is a tall device frame, roughly 0.5:1, going into
+landscape frames. Cropping one to fit sliced the device in half and cut its
+headline mid-word - the first attempt did exactly that and it read as a
+mistake, not as a crop.
+
+The fix is composition rather than crop tuning. `scripts/build-assets.py` reads
+each capture's ground colour from its border ring, trims the ground away to get
+the device's true bounding box, and re-composes the device whole and centred on
+that same ground at 1280 x 720. The frame then has nothing to cut but ground.
+
+- **Service and experience frames** are 16:9, so the composition lands exactly.
+- **Project cards** are 1.4:1, so they trim the composition to its central 79%
+  of width. The device sits well inside that, so nothing of the screen is lost.
+- **Project detail frames** use `contain` on the capture itself. This is the one
+  place where the complete screen at full size is the point.
+
+Each project's card therefore carries its own ground colour, which is real - it
+is the colour the owner shot the mockup on - and gives the grid its rhythm
+without introducing a palette that is not in the work.
+
+`MediaFrame` still exposes `position` for a future asset whose subject is not
+centred, but nothing uses it.
+
+### 20.3 Cards with no capture
+
+Five of the ten projects have no interface capture. A stock photograph was
+considered and rejected: a card in Selected Work reads as a picture of the thing
+that was built, so an unrelated image there is a claim about the work.
+
+`ProjectCover` renders instead - a typographic cover built from the project's
+own name and its first three tools, set on `--color-panel`. It reuses the
+site's existing pairing of a large low-contrast ghost word with the solid word
+against it, the same move `SectionHeading` makes, so a card without a capture
+reads as part of the design rather than as a gap. It is inverted because the
+light surface cards already carry the captures.
+
+It is `aria-hidden`: the card's own `h3` carries the title.
 
 Rules for all media: fixed-aspect frames, explicit `width`/`height` to prevent
 CLS, `loading="lazy"` below the fold, descriptive `alt` on meaningful images and
 `alt=""` on decorative ones. **Do not use `inspiration/` files as site assets** —
 they are read-only reference material ([rule.md](rule.md) Rule 1).
 
-Until real assets exist, build against a neutral local placeholder with the
-correct aspect ratio. Do not ship placeholder imagery, and do not use remote
-placeholder services.
+Where a slot still has no asset on record, the neutral local frame stays. It
+carries the subject's own name rather than a "pending" label, so it reads as a
+deliberate tile rather than as unfinished work. Do not ship fabricated imagery,
+and do not use remote placeholder services.
 
 ---
 
@@ -887,12 +1005,37 @@ before the phases that depend on them. Tracked in [plan.md](plan.md) Phase 1.
    `src/app/routes/` placeholder. Alternative if approval is withheld: a
    view-state switch plus the History API, which costs shareable URLs and
    correct back-button semantics.
-2. **Fonts.** Two families are needed (§5). Recommendation: Google Fonts
-   `Inter` + `Figtree` via a preconnected `<link>` with `font-display: swap`,
-   which adds no npm dependency. Alternative: a system grotesque stack, which
-   loses a visible amount of the reference's character.
-3. **Assets.** Eight asset classes are missing (§20). The hero, projects,
-   services and experience sections cannot reach visual parity without them.
-4. **Content.** Every string in the references belongs to another designer. The
-   data layer will be built to the reference's _shape_; the owner must supply
-   real projects, roles, dates, services and copy.
+2. **Fonts.** _Resolved by the owner in Phase 1.1, overriding the
+   recommendation below._ The delivery mechanism is as recommended — Google
+   Fonts via a preconnected `<link>` with `font-display: swap`, no npm
+   dependency — but the families are **Smooch Sans** (body and UI) and
+   **Oswald** (display), not `Inter` and `Figtree`. A third display family was
+   trialled for the ghost watermarks and dropped: it diverged measurably from
+   the reference's letterforms, so the site ships the two typographic voices the
+   reference actually has (rule.md Rule 2).
+3. **Assets.** _Resolved in Phase 3, closed out in Phase 4._ The owner supplied
+   the source media and `information/`. Six of the eight classes in §20 are
+   filled from real media; the contact background is the only one still
+   missing. Both open mappings were settled in Phase 4: `yarnvia.png` is an
+   apparel storefront on the evidence of the capture itself and is wired to the
+   resume's one e-commerce project under the name its own wordmark carries, with
+   the capture-to-resume linkage recorded as an inference in `projects.js`;
+   `ats.png` stays unused, because `information/project.js` files the matching
+   repository as under development with a second contributor and no shipped
+   status can be established (see [plan.md](plan.md) Phase 14).
+
+   Worth recording for whoever picks this up: the reason `ats.png` has nowhere
+   to go is partly a **gap in this specification**, not only a gap in the
+   record. Selected Work has exactly two badge states, `Real Project` and
+   `Exploration` (§11), and both read as finished. There is no in-progress
+   state, because the reference never shows one. Giving ATS a home therefore
+   means designing a third state first — its badge, its treatment, and whether
+   a card without a live destination and without a description still earns a
+   place in the grid. That is a change to this document, and only then a change
+   to `projects.js`. It was not made unilaterally.
+4. **Content.** _Resolved._ Every reference string was replaced with the
+   owner's own record in Phase 2 and extended in Phase 3 from
+   `information/project.js` and `information/resetup_resume.pdf`. Two gaps are
+   deliberate and documented in the data files: experience periods carry
+   verifiable status strings rather than invented date ranges, and the social
+   rail ships three real destinations rather than four.

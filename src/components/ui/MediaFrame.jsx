@@ -2,10 +2,21 @@
 // The aspect ratio is set on the frame, not the image, so the box reserves its
 // space before the image decodes and nothing shifts on load.
 //
-// No real project imagery exists yet. Rather than shipping fabricated
-// screenshots or calling a remote placeholder service, a frame with no `src`
-// renders a neutral local block at the correct proportions carrying the asset's
-// own label. Dropping a path into the data layer replaces it with no JSX change.
+// A frame with no `src` renders a neutral local block at the correct
+// proportions carrying whatever label it is given, so a slot with no asset on
+// record is still laid out correctly rather than broken. A caller that has
+// something better to show there passes `fallback`.
+//
+// `fit` and `position` exist because every capture the owner supplied is a tall
+// device frame. The card, service and experience frames are fed a 16:9
+// composition built for them, so they cover cleanly; the detail route shows the
+// capture itself and needs `contain`. `position` is available for a future
+// asset whose subject is not centred.
+
+const FITS = {
+  cover: 'object-cover',
+  contain: 'object-contain',
+};
 
 const RATIOS = {
   card: 'aspect-[1.4/1]',
@@ -20,6 +31,9 @@ export const MediaFrame = ({
   alt = '',
   label,
   ratio = 'card',
+  fallback,
+  fit = 'cover',
+  position,
   width,
   height,
   loading = 'lazy',
@@ -42,17 +56,22 @@ export const MediaFrame = ({
           loading={loading}
           fetchPriority={fetchPriority}
           decoding="async"
-          className={`h-full w-full object-cover ${imageClassName}`}
+          style={position ? { objectPosition: position } : undefined}
+          className={`h-full w-full ${FITS[fit] ?? FITS.cover} ${imageClassName}`}
         />
       ) : (
-        <span
-          aria-hidden="true"
-          className="absolute inset-0 flex items-end justify-start bg-surface p-4"
-        >
-          <span className="text-[0.6875rem] font-medium tracking-[0.14em] text-ink-subtle uppercase">
-            {label ?? 'Image pending'}
+        (fallback ?? (
+          <span
+            aria-hidden="true"
+            className="absolute inset-0 flex items-end justify-start bg-surface p-4"
+          >
+            {label ? (
+              <span className="text-[0.6875rem] font-medium tracking-[0.14em] text-ink-subtle uppercase">
+                {label}
+              </span>
+            ) : null}
           </span>
-        </span>
+        ))
       )}
       {children}
     </div>

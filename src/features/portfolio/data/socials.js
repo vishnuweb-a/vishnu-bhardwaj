@@ -1,15 +1,22 @@
 import { profile } from './profile';
 
-// The reference rail carries four pills. Only three destinations are verifiable
-// for this owner, and inventing a fourth would mean shipping a link that goes
-// nowhere. The rail renders whatever this array holds, so adding LinkedIn or
-// any other profile is a one-line change here with no JSX edit.
+// The reference rail carries four pills. The rail renders whatever this array
+// holds, so adding or removing a destination is a one-line change here with no
+// JSX edit. The LinkedIn href is the canonical profile URL with the share
+// tracking parameters stripped -- those are per-share and would rot.
 export const socials = [
   {
     id: 'github',
     label: 'GitHub',
     href: 'https://github.com/vishnuweb-a',
     icon: 'github',
+    external: true,
+  },
+  {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/in/vishnu-bhardwaj-81006b382',
+    icon: 'linkedin',
     external: true,
   },
   {

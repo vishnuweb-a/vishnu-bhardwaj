@@ -86,6 +86,38 @@ React component
   authored **in their final visual state**, so a skipped animation still leaves
   a correct, usable page. Preserve this invariant in every new animation.
 
+### Asset pipeline
+
+The owner's original media lives in `information/source-assets/` and is the
+source of truth. It is never modified and never referenced directly by the
+application.
+
+```
+information/source-assets/*.png   (originals, untouched, never served)
+      |
+      v  scripts/build-assets.py   (Pillow; run manually, not part of the build)
+      |
+src/assets/images/*.webp    (~390 KB total)
+      |
+      v  imported by src/features/portfolio/data/
+      |
+      v  Vite fingerprints and emits them
+```
+
+Importing through the data layer means a missing asset fails the build rather
+than 404ing at runtime, and every file is content-hashed. Never add a raw
+`/something.png` path to JSX or to a data file. `scripts/` is the only top-level
+directory outside the settled `src/` structure and holds this one script.
+
+**The originals are deliberately not in `public/`.** Vite copies `public/`
+verbatim into `dist/`, so while they lived there roughly 10 MB of source PNG
+shipped on every deploy that no page ever requests - the WebP derivatives are
+the only media the site loads. Moving them out cut `dist/` from 10.4 MB to
+0.87 MB with byte-identical derivatives (Phase 4, verified by checksum).
+`public/` now holds only what must be served verbatim: `favicon.svg` and
+`robots.txt`. Put nothing else there unless the browser needs to request it by a
+literal path.
+
 ### Build chunking
 
 [vite.config.js](vite.config.js) splits `vendor` (react, react-dom) and
@@ -117,6 +149,7 @@ src/
 │   ├── utils/            createAnimation, shouldReduceMotion
 │   └── index.js          Barrel export
 ├── assets/               Static assets imported by code
+│   └── images/           WebP derived by scripts/build-assets.py
 ├── components/
 │   ├── ui/               Generic primitives: Button, Card, Container
 │   └── feedback/         Loading / Empty / Error / Success states (to build)
@@ -577,8 +610,8 @@ image-generation capability to be available. If no image generation tool is
 available in the session, say so rather than describing images you did not make.
 
 Prefer existing project assets — [inspiration/](inspiration/) and
-[public/](public/) — when they already satisfy the requirement. Do not generate
-unnecessary images.
+`information/source-assets/` — when they already satisfy the requirement. Do not
+generate unnecessary images.
 
 #### image-to-code
 

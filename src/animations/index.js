@@ -14,4 +14,5 @@ export {
   followerIn,
   followerOut,
 } from './presets/pointerFollow';
+export { pointerWipe, wipeIn, wipeOut } from './presets/pointerWipe';
 export { createAnimation, shouldReduceMotion } from './utils/animationUtils';

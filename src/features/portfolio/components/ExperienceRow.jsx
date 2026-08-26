@@ -8,6 +8,9 @@
 // conclusive - so the row's only hover behaviour is the shared pointer
 // follower owned by the parent section.
 //
+// `detail` is optional - a role that carries one gets a third, smaller line
+// under the role; rows without one keep the two-line shape unchanged.
+//
 // Below 768px the period moves under the role and left-aligns; inferred
 // responsive behaviour (design.md section 16).
 export const ExperienceRow = ({ entry, onPointerEnter }) => (
@@ -21,6 +24,11 @@ export const ExperienceRow = ({ entry, onPointerEnter }) => (
         {entry.organisation}
       </h3>
       <p className="mt-1 text-base text-on-panel-muted">{entry.role}</p>
+      {entry.detail ? (
+        <p className="mt-2 max-w-prose text-sm leading-relaxed text-on-panel-muted">
+          {entry.detail}
+        </p>
+      ) : null}
     </div>
     <p className="text-base text-on-panel-muted sm:text-right">
       {entry.period}

@@ -5,17 +5,52 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#FCFCFC" />
+    <title>Vishnu Bhardwaj - Backend Developer</title>
     <meta
       name="description"
       content="Vishnu Bhardwaj - backend developer building production REST APIs, distributed systems and AI-integrated platforms."
     />
+    <meta name="author" content="Vishnu Bhardwaj" />
+
+    <!--
+      Open Graph and Twitter cards carry the same identity as the title and
+      description above, so a shared link reads as the site rather than as a
+      bare URL.
+
+      Four tags a share card normally also carries are deliberately absent,
+      because each would have to be invented: og:url and rel="canonical" need
+      the deployment domain, which is not decided yet, and og:image needs an
+      absolute URL to that same domain - the spec requires one and most
+      scrapers will not resolve a relative path. There is no social-card asset
+      either; the portrait ships from src/assets under a content hash that
+      changes with the build, so it cannot be named from static HTML.
+
+      twitter:card is "summary" rather than "summary_large_image" for the same
+      reason - the large variant without an image renders worse than the small
+      one. When the domain is known, add og:url, rel="canonical", an og:image
+      pointing at a stable file in public/, and switch the card type.
+    -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Vishnu Bhardwaj" />
+    <meta property="og:title" content="Vishnu Bhardwaj - Backend Developer" />
+    <meta
+      property="og:description"
+      content="Vishnu Bhardwaj - backend developer building production REST APIs, distributed systems and AI-integrated platforms."
+    />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Vishnu Bhardwaj - Backend Developer" />
+    <meta
+      name="twitter:description"
+      content="Vishnu Bhardwaj - backend developer building production REST APIs, distributed systems and AI-integrated platforms."
+    />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Smooch+Sans:wght@100..900&display=swap"
       rel="stylesheet"
     />
-    <title>Vishnu Bhardwaj - Backend Developer</title>
   </head>
   <body>
     <div id="root"></div>

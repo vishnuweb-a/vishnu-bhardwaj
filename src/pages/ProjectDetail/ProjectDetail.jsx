@@ -2,7 +2,7 @@ import { useLayoutEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Container, MediaFrame, Pill, SectionHeading } from '@/components/ui';
 import { ArrowLeft, ArrowUpRight } from '@/components/ui/icons';
-import { useScrollReveal } from '@/hooks';
+import { useDocumentTitle, useScrollReveal } from '@/hooks';
 import { revealOnScroll, staggerReveal } from '@/animations';
 import {
   AvailabilityPill,
@@ -41,6 +41,11 @@ export const ProjectDetail = () => {
   });
   const moreRef = useScrollReveal(revealOnScroll());
 
+  // An unknown slug falls through to NotFound below, which sets its own title.
+  useDocumentTitle(
+    project ? `${project.name} - ${profile.documentTitle}` : null
+  );
+
   // A route change keeps the previous scroll offset by default, which would
   // drop the visitor into the middle of a page they have not seen.
   useLayoutEffect(() => {
@@ -78,7 +83,7 @@ export const ProjectDetail = () => {
         >
           <div>
             <ul data-reveal-item className="flex flex-wrap gap-2">
-              {project.tags.map((tag) => (
+              {(project.tags ?? []).map((tag) => (
                 <li key={tag}>
                   <Pill tone="chip" size="xs">
                     {tag}
@@ -144,7 +149,7 @@ export const ProjectDetail = () => {
                 Tools
               </dt>
               <dd className="mt-2 flex flex-wrap gap-2 sm:justify-end">
-                {project.tools.map((tool) => (
+                {(project.tools ?? []).map((tool) => (
                   <span
                     key={tool}
                     className="inline-flex h-9 items-center rounded-lg border border-line bg-surface-raised px-3 text-sm text-ink-muted shadow-pill"
@@ -159,8 +164,11 @@ export const ProjectDetail = () => {
       </Container>
 
       <Container variant="narrow">
+        {/* Only projects with a capture on record render a showcase. An empty
+            `images` array collapses the stack rather than filling the page with
+            frames for screenshots that do not exist. */}
         <div ref={mediaRef} className="flex flex-col gap-8 lg:gap-12">
-          {project.images.map((image, index) => (
+          {(project.images ?? []).map((image) => (
             <figure
               key={image.alt}
               data-reveal-media
@@ -168,9 +176,12 @@ export const ProjectDetail = () => {
             >
               <MediaFrame
                 src={image.src}
-                alt={image.src ? image.alt : ''}
-                label={`${project.title} - view ${index + 1}`}
+                alt={image.alt}
                 ratio="page"
+                // A tall device capture is shown whole here, not cropped: this
+                // is the one place on the site where the complete screen is
+                // the point.
+                fit={image.fit ?? 'cover'}
                 width={1040}
                 height={780}
                 rounded="rounded-xl"

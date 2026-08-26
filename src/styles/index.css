@@ -42,6 +42,18 @@
   --text-display-md: clamp(1.75rem, 3.9vw, 3.5rem);
   --text-display-sm: clamp(1.75rem, 3.2vw, 2.75rem);
 
+  /* The tallest the hero cutout may stand before its crown reaches the
+     wordmark. The wordmark's baseline sits at a fixed offset from the top
+     (navbar pt-14 + its 44px row + the 104px column margin = 12.75rem) plus its
+     own line box, which is 0.9 of a font size that scales with the viewport
+     WIDTH. The portrait scales with viewport HEIGHT, so on a wide, short window
+     the two meet and the hair crosses the letters. Subtracting the wordmark's
+     occupied band from the viewport gives the cutout the room that is actually
+     left, with 1rem of clearance folded into the offset. */
+  --hero-portrait-max-height: calc(
+    100dvh - 13.75rem - 0.9 * var(--text-wordmark)
+  );
+
   /* Motion - design.md section 18 [measured from the video] */
   --motion-fast: 200ms;
   --motion-base: 460ms;
@@ -116,7 +128,10 @@
   @supports not (-webkit-text-stroke: 1px black) {
     .text-outlined {
       color: var(--color-ink);
-      opacity: 0.35;
+      /* 0.5, not 0.35: at 0.35 the blended ink reads 2.29:1 against the canvas
+         and fails the 3:1 large-text minimum [measured, Phase 4]. This path
+         only runs where -webkit-text-stroke is unsupported. */
+      opacity: 0.5;
     }
   }
 

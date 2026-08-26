@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { MediaFrame, Pill } from '@/components/ui';
 import { ArrowUpRight } from '@/components/ui/icons';
 import { usePointerFollow } from '@/hooks';
+import ProjectCover from './ProjectCover';
 
 // Card anatomy measured from project.webp and video t=5.6-7.5
 // (design.md section 11): a --color-surface body at ~12px radius holding a
@@ -34,7 +35,10 @@ export const ProjectCard = ({ project }) => {
         <MediaFrame
           src={project.thumbnail}
           alt={project.thumbnail ? project.thumbnailAlt : ''}
-          label="Preview pending"
+          // `thumbnail` is the 16:9 composition from scripts/build-assets.py,
+          // so the device is already centred on its own ground and this frame
+          // only trims the ground at the sides. Nothing of the screen is lost.
+          fallback={<ProjectCover project={project} />}
           ratio="card"
           width={520}
           height={372}
@@ -62,8 +66,11 @@ export const ProjectCard = ({ project }) => {
           {project.title}
         </h3>
 
+        {/* Optional lists are read through `?? []` so a record missing one
+            renders without it instead of throwing and taking the whole grid
+            down with it. Nothing is substituted in its place (test.md 11). */}
         <ul className="mt-4 mb-1 flex flex-wrap gap-2 px-1">
-          {project.tags.map((tag) => (
+          {(project.tags ?? []).map((tag) => (
             <li key={tag}>
               <Pill tone="chip" size="xs">
                 {tag}
