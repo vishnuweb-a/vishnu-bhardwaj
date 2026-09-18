@@ -1,86 +1,125 @@
 import { Link } from 'react-router-dom';
-import { MediaFrame, Pill } from '@/components/ui';
+import { MediaFrame } from '@/components/ui';
 import { ArrowUpRight } from '@/components/ui/icons';
-import { usePointerFollow } from '@/hooks';
-import ProjectCover from './ProjectCover';
+import { useAnimationOnHover } from '@/hooks';
+import { scaleIn, scaleOut } from '@/animations';
 
-// Card anatomy measured from project.webp and video t=5.6-7.5
-// (design.md section 11): a --color-surface body at ~12px radius holding a
-// fixed 1.4:1 media frame, a persistent category badge, a title of up to two
-// lines and a row of tag chips.
-//
-// The badge is persistent, not hover-revealed: it is present at video t=6.27
-// before any hover affordance appears and on the non-hovered card at t=6.35
-// (design.md section 17, row 5).
-//
-// On hover a white circular button holding an arrow fades in over the media and
-// then follows the pointer with easing. What does NOT happen, per the same
-// analysis: the media does not scale, the surface does not change colour, and
-// the card does not lift. None of those are added.
-//
-// The whole card is one real link, so the destination is reachable by keyboard
-// and by middle-click, and the follower stays decorative.
-export const ProjectCard = ({ project }) => {
-  const { containerRef, followerRef } = usePointerFollow({
-    settings: { x: 320, y: 320, ease: 'outQuad' },
-  });
+// Both presentations read the same immutable project record.
+export const ProjectCard = ({ project, featured = false, reverse = false }) => {
+  const { ref, onMouseEnter, onMouseLeave } = useAnimationOnHover(
+    scaleIn({ scale: 1.02, opacity: 1, duration: 250, ease: 'outQuad' }),
+    scaleOut({ scale: 1, opacity: 1, duration: 250, ease: 'outQuad' })
+  );
+  if (!project.thumbnail) {
+    return (
+      <article>
+        <Link
+          to={`/project/${project.slug}`}
+          className="group grid items-start gap-4 border-b border-line py-6 hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_auto] md:gap-8"
+        >
+          <div>
+            <span className="text-[0.625rem] font-semibold tracking-widest text-ink-subtle uppercase">
+              {project.category}
+            </span>
+            <h3 className="mt-2 text-lg font-semibold leading-snug tracking-tight text-ink">
+              {project.title}
+            </h3>
+            <ul className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-xs text-ink-muted">
+              {(project.tags ?? []).map((tag) => (
+                <li key={tag}>{tag}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="text-sm leading-relaxed text-ink-muted">
+              {project.summary}
+            </p>
+            <ul className="mt-4 flex flex-wrap gap-1.5">
+              {(project.tools ?? []).map((tool) => (
+                <li
+                  key={tool}
+                  className="rounded bg-surface px-2 py-1 text-xs text-ink-muted"
+                >
+                  {tool}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <ArrowUpRight
+            size={20}
+            className="hidden text-ink-muted group-hover:text-ink md:block"
+          />
+        </Link>
+      </article>
+    );
+  }
 
   return (
     <article className="h-full">
       <Link
         to={`/project/${project.slug}`}
-        ref={containerRef}
-        className="group flex h-full flex-col rounded-xl bg-surface p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        className={`group h-full overflow-hidden rounded-lg border border-line bg-surface-raised hover:border-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 ${featured ? 'grid md:grid-cols-2' : 'flex flex-col'}`}
       >
-        <MediaFrame
-          src={project.thumbnail}
-          alt={project.thumbnail ? project.thumbnailAlt : ''}
-          // `thumbnail` is the 16:9 composition from scripts/build-assets.py,
-          // so the device is already centred on its own ground and this frame
-          // only trims the ground at the sides. Nothing of the screen is lost.
-          fallback={<ProjectCover project={project} />}
-          ratio="card"
-          width={520}
-          height={372}
-          rounded="rounded-lg"
+        <div
+          className={`overflow-hidden ${featured && reverse ? 'md:order-2' : ''}`}
         >
-          <span className="absolute top-3 left-3 z-10 inline-flex h-6 items-center rounded-full bg-surface-raised px-2.5 text-[0.625rem] font-semibold tracking-[0.08em] text-ink uppercase shadow-pill">
-            {project.category}
-          </span>
-
-          {/* Decorative pointer follower. Authored hidden because it exists
-              only while a fine pointer is inside the card; under reduced motion
-              usePointerFollow never activates and it stays out of the way,
-              which is what design.md section 18 specifies. */}
-          <span
-            ref={followerRef}
-            aria-hidden="true"
-            style={{ opacity: 0 }}
-            className="pointer-events-none absolute top-0 left-0 z-20 inline-flex size-[54px] items-center justify-center rounded-full bg-surface-raised text-ink shadow-float"
+          <div ref={ref} className="h-full">
+            <MediaFrame
+              src={project.thumbnail}
+              alt={project.thumbnailAlt}
+              ratio="wide"
+              fit="contain"
+              width={1280}
+              height={720}
+              rounded="rounded-none"
+              className={featured ? 'h-full w-full' : 'w-full'}
+            />
+          </div>
+        </div>
+        <div
+          className={`flex min-w-0 flex-1 flex-col ${featured ? 'p-6 lg:p-9' : 'p-5'}`}
+        >
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-[0.625rem] font-semibold tracking-widest text-ink-subtle uppercase">
+              {project.category}
+            </span>
+            <ArrowUpRight
+              size={18}
+              className="shrink-0 text-ink-muted group-hover:text-ink"
+            />
+          </div>
+          <h3
+            className={`mt-3 font-semibold tracking-tight text-ink ${featured ? 'text-2xl leading-tight lg:text-3xl' : 'text-lg leading-snug'}`}
           >
-            <ArrowUpRight size={20} />
-          </span>
-        </MediaFrame>
-
-        <h3 className="mt-4 px-1 text-xl leading-snug font-medium text-ink">
-          {project.title}
-        </h3>
-
-        {/* Optional lists are read through `?? []` so a record missing one
-            renders without it instead of throwing and taking the whole grid
-            down with it. Nothing is substituted in its place (test.md 11). */}
-        <ul className="mt-4 mb-1 flex flex-wrap gap-2 px-1">
-          {(project.tags ?? []).map((tag) => (
-            <li key={tag}>
-              <Pill tone="chip" size="xs">
-                {tag}
-              </Pill>
-            </li>
-          ))}
-        </ul>
+            {project.title}
+          </h3>
+          <p className="mt-3 text-sm leading-relaxed text-ink-muted">
+            {project.summary}
+          </p>
+          <ul className="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-xs text-ink-muted">
+            {(project.tags ?? []).map((tag) => (
+              <li key={tag}>{tag}</li>
+            ))}
+          </ul>
+          {featured ? (
+            <p className="mt-4 text-xs font-medium text-ink">{project.role}</p>
+          ) : null}
+          <div className="grow" />
+          <ul className="mt-5 flex flex-wrap gap-1.5 border-t border-line pt-4">
+            {(project.tools ?? []).map((tool) => (
+              <li
+                key={tool}
+                className="rounded bg-surface px-2 py-1 text-[0.625rem] font-medium text-ink-muted"
+              >
+                {tool}
+              </li>
+            ))}
+          </ul>
+        </div>
       </Link>
     </article>
   );
 };
-
 export default ProjectCard;

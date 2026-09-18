@@ -19,6 +19,7 @@ export const navigation = [
     href: '#experience',
     count: experience.length,
   },
+  { id: 'about', label: 'About', href: '#about', count: null },
   { id: 'contact', label: 'Contact', href: '#contact', count: null },
 ];
 

@@ -1,112 +1,72 @@
 @import 'tailwindcss';
 
-/* Tailwind v4 CSS-first configuration. Every colour, family, size and motion
-   value the portfolio uses is declared here so components never hard-code a
-   hex, a duration or an easing curve. Values marked [measured] were derived
-   from pixel analysis of inspiration/ at a 1440x982 baseline; see design.md. */
+/* The redesign keeps Oswald for display text and uses a native sans for
+   reading. Portfolio data and asset colours remain in their source files. */
 @theme {
-  /* Colour - design.md section 4 [measured] */
-  --color-canvas: #fcfcfc;
-  --color-surface: #f4f4f4;
+  --color-canvas: #fafaf9;
+  --color-surface: #f0f0ed;
   --color-surface-raised: #ffffff;
-  --color-ink: #242424;
-  --color-ink-muted: #545454;
-  --color-ink-subtle: #6e6e6e;
-  --color-ink-ghost: #f4f4f4;
-  --color-line: #e4e4e4;
+  --color-ink: #202226;
+  --color-ink-muted: #56595e;
+  --color-ink-subtle: #696c70;
+  --color-line: #dedfdb;
+  --color-control: #858983;
+  --color-portrait: #e7ebe5;
   --color-panel: #242424;
   --color-panel-ghost: #303030;
-  --color-panel-line: #3a3a3a;
+  --color-panel-line: #565656;
   --color-on-panel: #f8f8f8;
-  --color-on-panel-muted: #a5a5a5;
+  --color-on-panel-muted: #b8b8b8;
   --color-pill: #161616;
-  --color-accent: #1ecb5c;
-
-  /* Families. The reference carries exactly two typographic voices, so this
-     maps to two: Smooch Sans for every UI and body role, Oswald for every
-     display role including the ghost watermarks, which are the same face set
-     light and widely tracked. A third display family was trialled for the
-     watermarks and measurably diverged from the reference's letterforms, so it
-     was dropped rather than mixed in (rule.md Rule 2). */
-  --font-body:
-    'Smooch Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
-    sans-serif;
+  --color-accent: #31815b;
+  --font-body: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --font-display:
     'Oswald', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-
-  /* Fluid display scale - design.md section 5. The four largest roles use
-     clamp() so they scale continuously instead of stepping at breakpoints. */
-  --text-wordmark: clamp(2.5rem, 10.2vw, 9.5rem);
-  --text-watermark: clamp(3.5rem, 9.7vw, 8.75rem);
-  --text-display-lg: clamp(2rem, 4.7vw, 4.25rem);
-  --text-display-md: clamp(1.75rem, 3.9vw, 3.5rem);
+  --text-wordmark: clamp(3.5rem, 6.5vw, 6rem);
+  --text-display-lg: clamp(2.25rem, 4.7vw, 4.25rem);
+  --text-display-md: clamp(1.75rem, 3vw, 2.5rem);
   --text-display-sm: clamp(1.75rem, 3.2vw, 2.75rem);
-
-  /* The tallest the hero cutout may stand before its crown reaches the
-     wordmark. The wordmark's baseline sits at a fixed offset from the top
-     (navbar pt-14 + its 44px row + the 104px column margin = 12.75rem) plus its
-     own line box, which is 0.9 of a font size that scales with the viewport
-     WIDTH. The portrait scales with viewport HEIGHT, so on a wide, short window
-     the two meet and the hair crosses the letters. Subtracting the wordmark's
-     occupied band from the viewport gives the cutout the room that is actually
-     left, with 1rem of clearance folded into the offset. */
-  --hero-portrait-max-height: calc(
-    100dvh - 13.75rem - 0.9 * var(--text-wordmark)
-  );
-
-  /* Motion - design.md section 18 [measured from the video] */
-  --motion-fast: 200ms;
-  --motion-base: 460ms;
-  --motion-slow: 750ms;
-  --motion-xslow: 900ms;
-  --motion-stagger: 130ms;
-  --motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --motion-ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
-
-  /* The only shadow system on the site: a barely-visible ambient lift on
-     floating pills and framed media. No other drop shadows are used. */
-  --shadow-pill: 0 1px 2px rgb(0 0 0 / 0.04), 0 6px 16px rgb(0 0 0 / 0.06);
-  --shadow-float: 0 8px 30px rgb(0 0 0 / 0.12), 0 2px 8px rgb(0 0 0 / 0.06);
+  --shadow-pill: 0 2px 5px rgb(0 0 0 / 0.03);
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
   }
-
   body {
     background-color: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-body);
-    font-size: 1.0625rem;
-    line-height: 1.55;
+    font-size: 1rem;
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
-
-  /* Anchor targets land clear of the top edge rather than flush against it.
-     The navbar is not sticky (design.md section 8), so this only has to give
-     the section room to breathe, not clear a fixed header. Set here rather than
-     as scroll-padding-top on html so the two do not stack into a 64px gap. */
+  /* Leave space for the persistent navigation when following section links. */
   section[id] {
-    scroll-margin-top: 2rem;
+    scroll-margin-top: 6rem;
   }
-
   h1,
   h2,
   h3 {
     text-wrap: balance;
   }
-
   p {
     text-wrap: pretty;
   }
-
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
     }
-
     *,
     *::before,
     *::after {
@@ -114,67 +74,5 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
-  }
-}
-
-@layer utilities {
-  /* The hero wordmark's outlined half. -webkit-text-stroke is a presentational
-     effect on real text, so the glyphs stay in the DOM for assistive tech. */
-  .text-outlined {
-    color: transparent;
-    -webkit-text-stroke: 2px var(--color-ink);
-  }
-
-  @supports not (-webkit-text-stroke: 1px black) {
-    .text-outlined {
-      color: var(--color-ink);
-      /* 0.5, not 0.35: at 0.35 the blended ink reads 2.29:1 against the canvas
-         and fails the 3:1 large-text minimum [measured, Phase 4]. This path
-         only runs where -webkit-text-stroke is unsupported. */
-      opacity: 0.5;
-    }
-  }
-
-  /* The service accordion's height change. This is the single sanctioned
-     layout animation in the project (rule.md Rule 6): a CSS transition on
-     grid-template-rows, never a JS animation and never height/top/left/width. */
-  .collapsible {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows var(--motion-base) var(--motion-ease-out);
-  }
-
-  .collapsible[data-expanded='true'] {
-    grid-template-rows: 1fr;
-  }
-
-  .collapsible > * {
-    min-height: 0;
-    overflow: hidden;
-  }
-
-  /* Contact background: a neutral high-key approximation of the reference's
-     photographic sky. design.md section 20 prefers a real optimised image;
-     swap one in through assets.contactBackground and this layer stays as the
-     fallback beneath it. No chroma is introduced. */
-  .sky-wash {
-    background-color: #eef0f1;
-    background-image:
-      radial-gradient(
-        60% 50% at 20% 15%,
-        rgb(255 255 255 / 0.95) 0%,
-        rgb(255 255 255 / 0) 60%
-      ),
-      radial-gradient(
-        45% 40% at 78% 28%,
-        rgb(255 255 255 / 0.9) 0%,
-        rgb(255 255 255 / 0) 65%
-      ),
-      radial-gradient(
-        70% 55% at 50% 92%,
-        rgb(255 255 255 / 0.85) 0%,
-        rgb(255 255 255 / 0) 70%
-      ),
-      linear-gradient(180deg, #e8eaec 0%, #f3f4f5 45%, #eceeef 100%);
   }
 }

@@ -1,26 +1,27 @@
 import { useDocumentTitle } from '@/hooks';
 import {
+  AboutSection,
   ContactSection,
   ExperienceSection,
   Hero,
+  Navbar,
   ProjectsSection,
   ServicesSection,
   profile,
 } from '@/features/portfolio';
 
-// Route-level composition only. The page order is the one measured from the
-// video's scroll sequence (design.md section 7); no section exists beyond
-// these, and none should be invented.
 export const Home = () => {
   // Restores the base title when a visitor comes back from a project route.
   useDocumentTitle(profile.documentTitle);
 
   return (
     <>
+      <Navbar />
       <Hero />
       <ProjectsSection />
       <ServicesSection />
       <ExperienceSection />
+      <AboutSection />
       <ContactSection />
     </>
   );

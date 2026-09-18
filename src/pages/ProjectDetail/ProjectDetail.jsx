@@ -25,7 +25,7 @@ const MetaBlock = ({ label, children }) => (
     <dt className="text-xs tracking-[0.08em] text-ink-subtle uppercase">
       {label}
     </dt>
-    <dd className="mt-1.5 text-xl leading-snug text-ink">{children}</dd>
+    <dd className="mt-1.5 text-base leading-snug text-ink">{children}</dd>
   </div>
 );
 
@@ -33,13 +33,21 @@ export const ProjectDetail = () => {
   const { slug } = useParams();
   const project = getProjectBySlug(slug);
 
-  const headerRef = useScrollReveal(staggerReveal({ each: 130 }), {
-    selector: '[data-reveal-item]',
-  });
-  const mediaRef = useScrollReveal(staggerReveal({ each: 150 }), {
-    selector: '[data-reveal-media]',
-  });
-  const moreRef = useScrollReveal(revealOnScroll());
+  const headerRef = useScrollReveal(
+    staggerReveal({ each: 40, translateY: [12, 0], duration: 400 }),
+    {
+      selector: '[data-reveal-item]',
+    }
+  );
+  const mediaRef = useScrollReveal(
+    staggerReveal({ each: 40, translateY: [12, 0], duration: 400 }),
+    {
+      selector: '[data-reveal-media]',
+    }
+  );
+  const moreRef = useScrollReveal(
+    revealOnScroll({ translateY: [12, 0], duration: 400 })
+  );
 
   // An unknown slug falls through to NotFound below, which sets its own title.
   useDocumentTitle(
@@ -60,7 +68,7 @@ export const ProjectDetail = () => {
 
   return (
     <>
-      <Container variant="wide" className="pt-10 lg:pt-14">
+      <Container variant="base" className="border-b border-line py-5">
         <div className="flex items-center justify-between gap-4">
           <Pill
             as={Link}
@@ -76,7 +84,7 @@ export const ProjectDetail = () => {
         </div>
       </Container>
 
-      <Container variant="wide" className="pt-16 pb-20 lg:pt-24 lg:pb-28">
+      <Container variant="base" className="py-12 lg:py-16">
         <div
           ref={headerRef}
           className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-20"
@@ -104,7 +112,7 @@ export const ProjectDetail = () => {
 
             <p
               data-reveal-item
-              className="mt-6 max-w-[54ch] text-lg text-ink-muted"
+              className="mt-6 max-w-[60ch] text-base text-ink-muted"
             >
               {project.description}
             </p>
@@ -163,7 +171,7 @@ export const ProjectDetail = () => {
         </div>
       </Container>
 
-      <Container variant="narrow">
+      <Container variant="base">
         {/* Only projects with a capture on record render a showcase. An empty
             `images` array collapses the stack rather than filling the page with
             frames for screenshots that do not exist. */}
@@ -172,7 +180,7 @@ export const ProjectDetail = () => {
             <figure
               key={image.alt}
               data-reveal-media
-              className="rounded-2xl border border-line bg-surface-raised p-3 shadow-pill sm:p-4"
+              className="rounded-lg border border-line bg-surface p-3 sm:p-4"
             >
               <MediaFrame
                 src={image.src}
@@ -184,23 +192,23 @@ export const ProjectDetail = () => {
                 fit={image.fit ?? 'cover'}
                 width={1040}
                 height={780}
-                rounded="rounded-xl"
+                rounded="rounded-md"
               />
             </figure>
           ))}
         </div>
 
-        <p className="mt-14 rounded-2xl border border-line bg-surface px-6 py-8 text-lg text-ink-muted sm:px-10">
+        <p className="mt-8 border-l-2 border-accent py-3 pl-6 text-base text-ink-muted max-w-prose">
           {project.caption}
         </p>
       </Container>
 
       {more.length > 0 ? (
-        <Container variant="narrow" className="pt-24 pb-8 lg:pt-32">
+        <Container variant="base" className="pt-16 pb-16 lg:pt-20">
           <div ref={moreRef}>
-            <SectionHeading label="/More Work" align="center" />
+            <SectionHeading label="/More Work" />
           </div>
-          <ul className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:mt-16 lg:gap-14">
+          <ul className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
             {more.map((item) => (
               <li key={item.slug}>
                 <ProjectCard project={item} />

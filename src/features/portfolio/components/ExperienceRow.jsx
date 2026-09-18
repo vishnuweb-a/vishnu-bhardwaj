@@ -1,39 +1,27 @@
-// A single experience row (design.md section 12). Company over role on the
-// left, period right-aligned, a 1px --color-panel-line rule between rows.
-//
-// This is a two-column list, not a timeline. No rail, no connector, no dot and
-// no node marker appears in any reference and none is added (rule.md Rule 4).
-//
-// Row text brightening on hover is NOT OBSERVED - the recording is not
-// conclusive - so the row's only hover behaviour is the shared pointer
-// follower owned by the parent section.
-//
-// `detail` is optional - a role that carries one gets a third, smaller line
-// under the role; rows without one keep the two-line shape unchanged.
-//
-// Below 768px the period moves under the role and left-aligns; inferred
-// responsive behaviour (design.md section 16).
-export const ExperienceRow = ({ entry, onPointerEnter }) => (
-  <li
-    data-reveal-row
-    onPointerEnter={onPointerEnter}
-    className="grid grid-cols-1 gap-1 border-b border-panel-line py-7 last:border-b-0 sm:grid-cols-[1fr_auto] sm:items-start sm:gap-8 lg:py-8"
-  >
-    <div>
-      <h3 className="text-lg leading-snug font-medium text-on-panel">
-        {entry.organisation}
-      </h3>
-      <p className="mt-1 text-base text-on-panel-muted">{entry.role}</p>
-      {entry.detail ? (
-        <p className="mt-2 max-w-prose text-sm leading-relaxed text-on-panel-muted">
-          {entry.detail}
-        </p>
-      ) : null}
-    </div>
-    <p className="text-base text-on-panel-muted sm:text-right">
+﻿export const ExperienceRow = ({ entry }) => (
+  <li className="relative grid grid-cols-1 gap-3 border-b border-line py-6 pl-6 hover:bg-surface-raised sm:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] sm:gap-x-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1.65fr)] lg:py-7">
+    <span
+      aria-hidden="true"
+      className="absolute top-0 bottom-0 left-0 border-l border-line"
+    />
+    <span
+      aria-hidden="true"
+      className="absolute top-8 -left-1 size-2 rounded-full bg-ink"
+    />
+    <p className="text-xs leading-relaxed text-ink-muted tabular-nums">
       {entry.period}
     </p>
+    <div>
+      <h3 className="text-base leading-snug font-semibold text-ink">
+        {entry.role}
+      </h3>
+      <p className="mt-1 text-sm text-ink-muted">{entry.organisation}</p>
+    </div>
+    {entry.detail ? (
+      <p className="max-w-prose text-sm leading-relaxed text-ink-muted sm:col-start-2 lg:col-start-auto">
+        {entry.detail}
+      </p>
+    ) : null}
   </li>
 );
-
 export default ExperienceRow;

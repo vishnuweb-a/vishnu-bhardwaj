@@ -2,38 +2,37 @@ import { useSearchParams } from 'react-router-dom';
 import { Container, Pill, SectionHeading } from '@/components/ui';
 import { ArrowUpRight } from '@/components/ui/icons';
 import { useScrollReveal } from '@/hooks';
-import { revealOnScroll, staggerReveal } from '@/animations';
-import { PROJECT_CATEGORIES, filterProjects, socials } from '../data';
+import { revealOnScroll } from '@/animations';
+import { PROJECT_CATEGORIES, filterProjects, projects, socials } from '../data';
 import ProjectFilters from './ProjectFilters';
 import ProjectCard from './ProjectCard';
 
-// /SELECTED WORK over a PORTFOLIO ghost watermark, a control row, then a
-// two-column grid in the 1104px NARROW container with a 56px gap
-// ([measured], design.md section 11). It is a grid - not a carousel, not
-// horizontal scroll, not a stack.
-//
-// Card stagger is ~150-200ms against the 130ms used elsewhere, which is what
-// the video shows for this section specifically.
 const workArchive = socials.find((social) => social.id === 'github');
+// Highlight existing screenshot-rich records without changing their source order.
+const featuredSlugs = projects
+  .filter((project) => project.thumbnail)
+  .slice(0, 2)
+  .map((project) => project.slug);
 
 export const ProjectsSection = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const requested = searchParams.get('filter');
   const active = PROJECT_CATEGORIES.includes(requested) ? requested : 'All';
   const visible = filterProjects(active);
-
-  const headingRef = useScrollReveal(revealOnScroll());
-  const gridRef = useScrollReveal(staggerReveal({ each: 170 }), {
-    selector: '[data-reveal-card]',
-  });
+  const featured = visible.filter((project) =>
+    featuredSlugs.includes(project.slug)
+  );
+  const archive = visible.filter(
+    (project) => !featuredSlugs.includes(project.slug)
+  );
+  const headingRef = useScrollReveal(
+    revealOnScroll({ translateY: [12, 0], duration: 400 })
+  );
 
   const handleFilterChange = (category) => {
     const next = new URLSearchParams(searchParams);
-    if (category === 'All') {
-      next.delete('filter');
-    } else {
-      next.set('filter', category);
-    }
+    if (category === 'All') next.delete('filter');
+    else next.set('filter', category);
     setSearchParams(next, { replace: true });
   };
 
@@ -41,28 +40,14 @@ export const ProjectsSection = () => {
     <section
       id="work"
       aria-labelledby="work-heading"
-      className="py-24 lg:py-32"
+      className="py-16 lg:py-20"
     >
-      <Container variant="wide">
-        <div ref={headingRef}>
-          <SectionHeading
-            id="work-heading"
-            label="/Selected Work"
-            watermark="Portfolio"
-            align="center"
-            className="pt-10"
-          />
-        </div>
-      </Container>
-
-      <Container variant="narrow" className="mt-16 lg:mt-24">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <ProjectFilters active={active} onChange={handleFilterChange} />
-
-          {/* The reference carries a `View All Work` pill but never shows its
-              destination, so plan.md defers inventing an index route. It points
-              at the owner's public repositories, which is the real full body of
-              work rather than a fabricated page. */}
+      <Container variant="base">
+        <div
+          ref={headingRef}
+          className="flex flex-wrap items-end justify-between gap-5"
+        >
+          <SectionHeading id="work-heading" label="/Selected Work" />
           <Pill
             as="a"
             href={workArchive.href}
@@ -70,26 +55,52 @@ export const ProjectsSection = () => {
             rel="noreferrer noopener"
             tone="raised"
             size="md"
-            className="self-start hover:border-ink sm:self-auto"
+            className="hover:border-ink"
           >
-            View All Work
-            <ArrowUpRight size={15} />
+            View All Work <ArrowUpRight size={15} />
           </Pill>
         </div>
-
+        <div className="mt-6 border-b border-line">
+          <ProjectFilters active={active} onChange={handleFilterChange} />
+        </div>
         {visible.length > 0 ? (
-          <ul
-            ref={gridRef}
-            className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:mt-14 lg:gap-14"
-          >
-            {visible.map((project) => (
-              <li key={project.slug} data-reveal-card>
-                <ProjectCard project={project} />
-              </li>
-            ))}
-          </ul>
+          <div className="mt-8" aria-live="polite" aria-atomic="false">
+            {featured.length > 0 ? (
+              <ul className="grid gap-8">
+                {featured.map((project, index) => (
+                  <li key={project.slug}>
+                    <ProjectCard
+                      project={project}
+                      featured
+                      reverse={index % 2 === 1}
+                    />
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            <ul
+              className={`grid gap-5 sm:grid-cols-2 lg:grid-cols-3 ${featured.length ? 'mt-8' : ''}`}
+            >
+              {archive
+                .filter((project) => project.thumbnail)
+                .map((project) => (
+                  <li key={project.slug}>
+                    <ProjectCard project={project} />
+                  </li>
+                ))}
+            </ul>
+            <ul className="mt-8 border-t border-line">
+              {archive
+                .filter((project) => !project.thumbnail)
+                .map((project) => (
+                  <li key={project.slug}>
+                    <ProjectCard project={project} />
+                  </li>
+                ))}
+            </ul>
+          </div>
         ) : (
-          <p className="mt-14 rounded-xl border border-line bg-surface px-6 py-16 text-center text-ink-muted">
+          <p className="mt-14 rounded-lg border border-line bg-surface px-6 py-16 text-center text-ink-muted">
             No projects in this category yet.
           </p>
         )}
@@ -97,5 +108,4 @@ export const ProjectsSection = () => {
     </section>
   );
 };
-
 export default ProjectsSection;

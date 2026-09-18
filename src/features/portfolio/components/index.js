@@ -11,6 +11,7 @@ export { ProjectCover } from './ProjectCover';
 export { ServicesSection } from './ServicesSection';
 export { ServiceRow } from './ServiceRow';
 export { ExperienceSection } from './ExperienceSection';
+export { AboutSection } from './AboutSection';
 export { ExperienceRow } from './ExperienceRow';
 export { ContactSection } from './ContactSection';
 export { Footer } from './Footer';

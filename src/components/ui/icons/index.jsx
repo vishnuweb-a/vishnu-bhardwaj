@@ -31,6 +31,14 @@ export const ArrowUpRight = (props) => (
   </Svg>
 );
 
+export const Download = (props) => (
+  <Svg {...props}>
+    <path d="M12 4v10" {...stroke} />
+    <path d="m7.5 10 4.5 4 4.5-4" {...stroke} />
+    <path d="M5 19h14" {...stroke} />
+  </Svg>
+);
+
 export const ArrowLeft = (props) => (
   <Svg {...props}>
     <path d="M19 12H5" {...stroke} />

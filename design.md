@@ -1039,3 +1039,65 @@ before the phases that depend on them. Tracked in [plan.md](plan.md) Phase 1.
    deliberate and documented in the data files: experience periods carry
    verifiable status strings rather than invented date ranges, and the social
    rail ships three real destinations rather than four.
+
+---
+
+## 22. September 2026 presentation redesign
+
+This section supersedes the old reference's visual rules for the current UI.
+The user explicitly requested a redesign using
+`updatedInspiration/portfolio-reference.png`, with the existing portfolio's
+information treated as immutable. Prior reproduction measurements above remain
+historical context, not requirements for the new presentation.
+
+### Audit before implementation
+
+- Inspected the React 19 / Vite / Tailwind v4 / Anime.js implementation,
+  shared primitives, hooks, routes, feature components, data and asset pipeline.
+- The actual implementation has React Router and ten project-detail URLs,
+  despite the older scaffold description. Preserve this working architecture.
+- Inventoried 10 projects, 4 services, 5 experience entries, 4 social/contact
+  destinations, 4 navigation destinations and their derived counters.
+- Read both the live data layer and supplied `information/` records. The live
+  data layer remains authoritative for presentation; original records remain
+  untouched, including entries not currently published.
+- Found a real portrait, avatar, five screenshot pairs, source PNGs, inline SVG
+  icons and a source resume PDF. No existing About section, download control,
+  contact form or theme toggle exists in the live site.
+- Captured the original rendered page, URLs and image references before edits.
+- Main issues: condensed body typography, large section gaps, decorative ghost
+  headings, oversized inverted experience panel and empty screenshot substitutes.
+
+### Design system and reference interpretation
+
+- Canvas `#FAFAF9`, surface `#F0F0ED`, raised surface `#FFFFFF`, ink `#202226`,
+  muted text `#56595E`, restrained green `#31815B`. All are Tailwind theme tokens.
+- Keep the existing Oswald display font for the name and contact statement.
+  Native Segoe UI / Helvetica Neue / Arial improves body and metadata legibility
+  without adding a font dependency or stylesheet.
+- Align the page to the existing base Container: max-width 1280px with responsive
+  16/24/32px inner gutters. Section spacing is 64–80px rather than viewport-sized.
+- Use the new reference's compact navigation, split portrait hero, image-led
+  work, light timeline and paired contact composition. Prioritize the written
+  brief's restrained buttons and editorial project hierarchy where it differs
+  from the image's gradients, statistics and repetitive cards.
+- Do not copy reference-only projects, numbers, dates, biography, claims, social
+  accounts or resume controls. Existing text is rendered directly from the same
+  records. No data or media file is edited.
+- Two screenshot-rich projects form alternating editorial features. Remaining
+  screenshot projects form a compact grid, while projects without screenshots
+  become text rows with their real summaries, categories, tags and technologies.
+- Preserve URL-based filters, shareable detail routes, external destinations,
+  the single-open service accordion and mail/phone actions.
+- Use a persistent header with section state from IntersectionObserver. Mobile
+  navigation is a non-modal disclosure: hidden links leave the tab order and
+  Escape returns focus to the toggle.
+- Use the existing animation hooks/presets with small 12px, 400ms reveals and
+  250ms image scaling. Preserve the portrait colour-wipe interaction. Author
+  everything visible and retain reduced-motion and scope-cleanup behavior.
+- Reuse existing contact wording and assets; no new biography or marketing copy.
+- Project detail pages inherit the same type, spacing, action and footer system.
+
+Validation results are recorded in `plan.md` after execution. Session screenshots
+and automated browser checks are kept in the ignored `.portfolio-qa.local/`
+directory, not added as application dependencies or shipped assets.
