@@ -27,3 +27,18 @@ export {
   projectBounce,
   projectImpact,
 } from './presets/projectCard';
+export {
+  byteSettle,
+  byteRelease,
+  byteLand,
+  byteWalkBounce,
+  byteHop,
+  byteWiggle,
+  byteSpin,
+  byteStretch,
+  byteSit,
+  byteStand,
+  byteDizzy,
+  byteBubbleIn,
+  byteBubbleOut,
+} from './presets/byte';

@@ -1,3 +1,5 @@
+import { BytePet } from '@/features/byte';
+
 // Both routes share the main landmark and keyboard skip link.
 //
 // The wrapper carries no background of its own: `body` already paints the
@@ -13,6 +15,11 @@ export const MainLayout = ({ children }) => (
     <main id="main" tabIndex={-1}>
       {children}
     </main>
+    {/* Mounted here rather than in App so BYTE is shared by every route and
+        outlives navigation between them, but still sits outside <main> - it is
+        a companion overlay, not page content. It is last in the DOM so its
+        focusable body comes after the page's own content in tab order. */}
+    <BytePet />
   </div>
 );
 
