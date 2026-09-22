@@ -12,7 +12,7 @@ const experience = [
         wrk : "building ai automated esate-software and PETAI , ai driven mobile application . lauch(soon)"
 
     },{
-        place : "Web-Bytes",
+        place : "Webytes",
         tenure : "june-2026-now",
         position : "tech-lead"
 

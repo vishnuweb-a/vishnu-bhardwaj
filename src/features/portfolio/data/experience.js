@@ -19,8 +19,7 @@ export const experience = [
     ],
   },
   {
-    // Webytes is the owner's confirmed spelling; retain the existing role ID.
-    id: 'web-bytes',
+    id: 'webytes',
     organisation: 'Webytes',
     role: 'Tech lead',
     period: 'June 2026 - Present',
@@ -31,16 +30,6 @@ export const experience = [
     detail:
       'Leading web-related technical work, helping structure implementation decisions and supporting the team in turning ideas into working interfaces.',
     technologies: ['React', 'Frontend', 'UI Engineering', 'Team Leadership'],
-  },
-  {
-    // Present in information/experience.js, but omitted by the previous UI.
-    id: 'orbii',
-    organisation: 'Orbii',
-    role: 'Co-Founder',
-    period: '2026 — Present',
-    category: 'Leadership / Co-founding',
-    timeline: 'FOUND',
-    timelineLabel: 'Orbii',
   },
   {
     id: 'tech-yantra',
