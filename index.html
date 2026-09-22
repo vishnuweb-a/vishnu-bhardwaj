@@ -4,16 +4,12 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="theme-color"
-      content="#FCFCFC"
-      media="(prefers-color-scheme: light)"
-    />
-    <meta
-      name="theme-color"
-      content="#18181b"
-      media="(prefers-color-scheme: dark)"
-    />
+    <!--
+      Unconditional, because the theme no longer follows prefers-color-scheme:
+      a media-split pair here would paint light browser chrome around the dark
+      default for anyone whose OS is set to light.
+    -->
+    <meta name="theme-color" content="#18181b" />
 
     <!--
       Theme bootstrap. This runs synchronously in <head>, before the browser
@@ -21,30 +17,33 @@
       avoid a flash of the wrong theme: any class applied from a component
       effect lands after the first paint has already shown the default.
 
-      The resolution order matches src/hooks/useTheme.js - stored choice, then
-      the OS preference, then light. The two are deliberately duplicated rather
-      than shared, because a module import here would defeat the point by
-      making this async. localStorage throws in some privacy modes, so the
-      whole thing is wrapped: a failure falls through to the light default
-      rather than blocking the page.
+      The resolution order matches src/hooks/useTheme.js - a stored choice,
+      otherwise dark. Dark is the site's designed default, so the OS
+      preference is deliberately not consulted on a first visit; only an
+      explicit toggle moves a visitor to light, and that choice then persists.
+      The two copies are deliberately duplicated rather than shared, because a
+      module import here would defeat the point by making this async.
+
+      localStorage throws in some privacy modes, so the whole thing is
+      wrapped. The catch still applies dark, because falling through to the
+      CSS default would strand those visitors in light.
     -->
     <script>
       (function () {
+        var root = document.documentElement;
+        var theme = 'dark';
         try {
           var stored = localStorage.getItem('portfolio-theme');
-          var theme =
-            stored === 'dark' || stored === 'light'
-              ? stored
-              : window.matchMedia('(prefers-color-scheme: dark)').matches
-                ? 'dark'
-                : 'light';
-          if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
+          if (stored === 'light') {
+            theme = 'light';
           }
-          document.documentElement.style.colorScheme = theme;
         } catch (error) {
-          /* No storage access - the light default in CSS stands. */
+          /* No storage access - the dark default stands. */
         }
+        if (theme === 'dark') {
+          root.classList.add('dark');
+        }
+        root.style.colorScheme = theme;
       })();
     </script>
     <title>Vishnu Bhardwaj - Backend Developer</title>

@@ -3,7 +3,12 @@
 /* Dark mode is driven by a `dark` class on <html>, set before paint by the
    inline bootstrap in index.html. The default `dark:` variant in v4 follows
    prefers-color-scheme, which would ignore an explicit user choice, so it is
-   redefined here to follow the class instead. */
+   redefined here to follow the class instead.
+
+   Dark is the default: the bootstrap applies the class unless a visitor has
+   stored a light choice. The light values below therefore stay in `@theme` as
+   the base layer that `.dark` overrides - swapping the two blocks would
+   invert every `dark:` variant in the components for no benefit. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* The redesign keeps Oswald for display text and uses a native sans for
@@ -89,9 +94,9 @@
        browser which UA widget palette to use for scrollbars and form
        controls. */
     background-color: var(--color-canvas);
-    color-scheme: light;
-  }
-  html.dark {
+    /* Dark is the default theme, so it is also the default widget palette.
+       Both the bootstrap and useTheme then set `style.colorScheme` inline,
+       which overrides this whenever a visitor has chosen light. */
     color-scheme: dark;
   }
   body {

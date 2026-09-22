@@ -7,7 +7,7 @@ import { THEME_STORAGE_KEY, THEMES } from '@/utils/constants';
 // with what is on screen and avoids a second, contradictory decision here.
 const readAppliedTheme = () => {
   if (typeof document === 'undefined') {
-    return THEMES.light;
+    return THEMES.dark;
   }
   return document.documentElement.classList.contains('dark')
     ? THEMES.dark
@@ -17,15 +17,6 @@ const readAppliedTheme = () => {
 // localStorage throws rather than returning null under some privacy settings,
 // so every access is guarded. Losing persistence is acceptable; losing the
 // render is not.
-const readStoredTheme = () => {
-  try {
-    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-    return stored === THEMES.dark || stored === THEMES.light ? stored : null;
-  } catch {
-    return null;
-  }
-};
-
 const storeTheme = (theme) => {
   try {
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
@@ -37,9 +28,9 @@ const storeTheme = (theme) => {
 /**
  * Light/dark theme state, applied as a `dark` class on <html>.
  *
- * Resolution order on a first visit: a stored choice, then the OS
- * `prefers-color-scheme`, then light. Once a visitor toggles, their choice is
- * stored and takes precedence over the OS from then on.
+ * Dark is the site's designed default and is what a first visit gets,
+ * whatever the OS `prefers-color-scheme` says. Toggling to light stores that
+ * choice, which then wins on every later visit until it is toggled back.
  */
 export const useTheme = () => {
   const [theme, setTheme] = useState(readAppliedTheme);
@@ -51,22 +42,6 @@ export const useTheme = () => {
     root.classList.toggle('dark', theme === THEMES.dark);
     root.style.colorScheme = theme;
   }, [theme]);
-
-  // A visitor who has not chosen explicitly keeps following the OS, including
-  // a change made while the tab is open. A stored choice opts out of this.
-  useEffect(() => {
-    const query = window.matchMedia('(prefers-color-scheme: dark)');
-
-    const handleChange = (event) => {
-      if (readStoredTheme()) {
-        return;
-      }
-      setTheme(event.matches ? THEMES.dark : THEMES.light);
-    };
-
-    query.addEventListener('change', handleChange);
-    return () => query.removeEventListener('change', handleChange);
-  }, []);
 
   const toggleTheme = useCallback(() => {
     setTheme((current) => {

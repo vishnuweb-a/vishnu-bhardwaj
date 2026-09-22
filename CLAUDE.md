@@ -157,7 +157,9 @@ break dark mode.
   the control is [src/components/ui/ThemeToggle.jsx](src/components/ui/ThemeToggle.jsx).
   There is no theme provider — the toggle is the only consumer (§19).
 - Persistence is `localStorage` under `THEME_STORAGE_KEY`. Resolution order is
-  **stored choice → OS preference → light**.
+  **stored choice → dark**. Dark is the site's designed default, so the OS
+  `prefers-color-scheme` is deliberately not consulted on a first visit; only
+  an explicit toggle moves a visitor to light, and that choice then persists.
 - The anti-flicker bootstrap in `index.html` must stay inline and synchronous
   in `<head>`. Anything async lands after the first paint and reintroduces the
   flash.
