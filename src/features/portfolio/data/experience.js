@@ -1,6 +1,6 @@
 // The inverted panel's two-column rows (design.md section 12).
 //
-// Ordered current-first: the two ongoing roles, then the dated ones in reverse
+// Ordered current-first: the ongoing role, then the dated ones in reverse
 // chronological order. `period` carries the real range from the owner's record.
 //
 // `detail` is optional - only the roles with concrete shipped work carry one,
@@ -11,15 +11,6 @@
 // carrying the organisation's name, which is the correct state rather than a
 // missing one.
 export const experience = [
-  {
-    id: 'orbii',
-    organisation: 'Orbii',
-    role: 'Co-founder',
-    period: '2026 - Present',
-    detail: null,
-    media: null,
-    mediaAlt: 'Orbii',
-  },
   {
     id: 'web-bytes',
     organisation: 'Web Bytes',
