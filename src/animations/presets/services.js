@@ -21,3 +21,14 @@ export const serviceMarquee = (options = {}) => ({
   ease: 'linear',
   ...options,
 });
+
+// The "Building now" indicator. Authored at full opacity so the reduced-motion
+// path leaves a solid, legible dot rather than a half-faded one.
+export const statusPulse = (options = {}) => ({
+  opacity: [1, 0.35],
+  duration: 1400,
+  loop: true,
+  alternate: true,
+  ease: 'inOutQuad',
+  ...options,
+});

@@ -13,6 +13,7 @@ export { ServiceCard } from './ServiceCard';
 export { TechnologyTicker } from './TechnologyTicker';
 export { ExperienceSection } from './ExperienceSection';
 export { AboutSection } from './AboutSection';
-export { ExperienceRow } from './ExperienceRow';
+export { ExperienceCard } from './ExperienceCard';
+export { ExperienceTimeline } from './ExperienceTimeline';
 export { ContactSection } from './ContactSection';
 export { Footer } from './Footer';

@@ -16,7 +16,12 @@ export {
 } from './presets/pointerFollow';
 export { pointerWipe, wipeIn, wipeOut } from './presets/pointerWipe';
 export { createAnimation, shouldReduceMotion } from './utils/animationUtils';
-export { serviceTilt, serviceRing, serviceMarquee } from './presets/services';
+export {
+  serviceTilt,
+  serviceRing,
+  serviceMarquee,
+  statusPulse,
+} from './presets/services';
 export {
   projectPerspective,
   projectBounce,
