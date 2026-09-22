@@ -1,6 +1,12 @@
 import { useLayoutEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Container, MediaFrame, Pill, SectionHeading } from '@/components/ui';
+import {
+  Container,
+  MediaFrame,
+  Pill,
+  SectionHeading,
+  ThemeToggle,
+} from '@/components/ui';
 import { ArrowLeft, ArrowUpRight } from '@/components/ui/icons';
 import { useDocumentTitle, useScrollReveal } from '@/hooks';
 import { revealOnScroll, staggerReveal } from '@/animations';
@@ -80,7 +86,12 @@ export const ProjectDetail = () => {
             <ArrowLeft size={16} />
             Back
           </Pill>
-          <AvailabilityPill className="hidden sm:block" />
+          {/* This route has its own top bar rather than the home navbar, so
+              the theme control is repeated here to stay reachable. */}
+          <div className="flex items-center gap-3">
+            <AvailabilityPill className="hidden sm:block" />
+            <ThemeToggle />
+          </div>
         </div>
       </Container>
 

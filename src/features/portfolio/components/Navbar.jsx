@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { Container, Pill } from '@/components/ui';
+import { Container, Pill, ThemeToggle } from '@/components/ui';
 import { ArrowUpRight, Close, Menu } from '@/components/ui/icons';
 import { navigation, profile } from '../data';
 
@@ -94,6 +94,11 @@ export const Navbar = () => {
           </ul>
 
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* In the persistent control group rather than inside the
+                collapsible menu, so the theme is one press away at every
+                breakpoint instead of being buried on mobile. */}
+            <ThemeToggle />
+
             <Pill
               as="a"
               href={profile.contactHref}

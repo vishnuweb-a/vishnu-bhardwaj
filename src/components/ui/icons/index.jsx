@@ -134,11 +134,41 @@ export const Cloud = (props) => (
   </Svg>
 );
 
+export const Compass = (props) => (
+  <Svg {...props}>
+    <circle cx="12" cy="12" r="8.5" {...stroke} />
+    <path d="m15.2 8.8-1.9 4.5-4.5 1.9 1.9-4.5Z" {...stroke} />
+  </Svg>
+);
+
 export const Sparkle = (props) => (
   <Svg {...props}>
     <path
       d="M12 3.5 13.8 9 19 10.8 13.8 12.6 12 18l-1.8-5.4L5 10.8 10.2 9Z"
       {...stroke}
     />
+  </Svg>
+);
+
+// The theme control's two states. Both are drawn on the same 24 grid as the
+// rest of the set so they sit at the same optical weight as the nav icons
+// beside them. No icon package is installed and none should be (CLAUDE.md 18).
+export const Sun = (props) => (
+  <Svg {...props}>
+    <circle cx="12" cy="12" r="4" {...stroke} />
+    <path d="M12 2.5v2" {...stroke} />
+    <path d="M12 19.5v2" {...stroke} />
+    <path d="M2.5 12h2" {...stroke} />
+    <path d="M19.5 12h2" {...stroke} />
+    <path d="m5.3 5.3 1.4 1.4" {...stroke} />
+    <path d="m17.3 17.3 1.4 1.4" {...stroke} />
+    <path d="m18.7 5.3-1.4 1.4" {...stroke} />
+    <path d="m6.7 17.3-1.4 1.4" {...stroke} />
+  </Svg>
+);
+
+export const Moon = (props) => (
+  <Svg {...props}>
+    <path d="M20 13.5A8 8 0 1 1 10.5 4a6.5 6.5 0 0 0 9.5 9.5Z" {...stroke} />
   </Svg>
 );

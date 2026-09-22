@@ -132,6 +132,48 @@ Tailwind v4 CSS-first. The single entry is
 `prefers-reduced-motion` reset. **There is no `tailwind.config.js` and none
 should be created.**
 
+### Theming
+
+The site has a light and a dark theme, driven by a `dark` class on `<html>`.
+
+```
+index.html inline bootstrap   sets the class before first paint
+      ↓
+.dark { … } in src/styles/index.css   rebinds the @theme colour tokens
+      ↓
+components                    already consume tokens, so they follow
+```
+
+Every colour in `@theme` is a **semantic token** (`--color-canvas`,
+`--color-ink`, `--color-line`, …), never a palette value. That is what makes a
+theme a stylesheet change: the `.dark` block rebinds the same names and the
+components need no `dark:` variants. **Style new UI with these tokens.** A
+hard-coded `bg-white` or `text-slate-900` cannot follow the theme and will
+break dark mode.
+
+- The `dark:` variant is redefined via `@custom-variant` to follow the class
+  rather than `prefers-color-scheme`, so an explicit choice wins over the OS.
+- Theme state lives in [src/hooks/useTheme.js](src/hooks/useTheme.js);
+  the control is [src/components/ui/ThemeToggle.jsx](src/components/ui/ThemeToggle.jsx).
+  There is no theme provider — the toggle is the only consumer (§19).
+- Persistence is `localStorage` under `THEME_STORAGE_KEY`. Resolution order is
+  **stored choice → OS preference → light**.
+- The anti-flicker bootstrap in `index.html` must stay inline and synchronous
+  in `<head>`. Anything async lands after the first paint and reintroduces the
+  flash.
+- The `panel` tokens are an inverted surface that stays dark in **both**
+  themes. `bg-white/5` and `text-white` are correct on it and only on it.
+- The dark grid background is the `.dark body` rule in
+  [src/styles/index.css](src/styles/index.css) — `background-attachment: fixed`
+  so it stays anchored while scrolling. Light mode has no grid.
+- Theme-change transitions are gated behind a temporary `.theme-transition`
+  class rather than applied permanently, so they do not slow every hover.
+
+Dark colour values are chosen to meet contrast (4.5:1 text, 3:1 UI), not
+picked from the palette by name — `ink-subtle` and `control` are both lighter
+than their nominal zinc steps for that reason. Re-check contrast when changing
+one.
+
 ---
 
 ## 4. Folder Structure
@@ -151,10 +193,12 @@ src/
 ├── assets/               Static assets imported by code
 │   └── images/           WebP derived by scripts/build-assets.py
 ├── components/
-│   ├── ui/               Generic primitives: Button, Card, Container
+│   ├── ui/               Generic primitives: Button, Card, Container,
+│   │                     ThemeToggle
 │   └── feedback/         Loading / Empty / Error / Success states (to build)
 ├── features/             Feature-oriented modules (empty; see §5)
-├── hooks/                Shared hooks — useAnimation, useAnimationOnHover
+├── hooks/                Shared hooks — useAnimation, useAnimationOnHover,
+│                         useTheme
 ├── layouts/              MainLayout (header / main / footer)
 ├── lib/                  Shared libraries that fit nowhere else
 ├── pages/                Page components — Home/, NotFound/

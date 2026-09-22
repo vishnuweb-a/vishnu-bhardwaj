@@ -12,13 +12,16 @@ export const Button = ({
   const baseStyles =
     'inline-flex items-center justify-center font-medium rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
 
+  // The palette literals these three variants carried could not follow a
+  // theme, so they are stated as the same semantic tokens the rest of the site
+  // uses. Their roles are unchanged - solid, filled, quiet.
   const variants = {
     primary:
-      'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500',
+      'bg-accent text-on-pill hover:opacity-90 focus-visible:ring-accent',
     secondary:
-      'bg-slate-200 text-slate-900 hover:bg-slate-300 focus-visible:ring-slate-500',
-    tertiary: 'text-slate-900 hover:bg-slate-100 focus-visible:ring-slate-500',
-    pill: 'rounded-full bg-pill text-white shadow-pill hover:bg-ink focus-visible:ring-ink',
+      'bg-surface text-ink hover:bg-surface-raised focus-visible:ring-ink',
+    tertiary: 'text-ink hover:bg-surface focus-visible:ring-ink',
+    pill: 'rounded-full bg-pill text-on-pill shadow-pill hover:bg-ink focus-visible:ring-ink',
     pillOutline:
       'rounded-full bg-surface-raised text-ink border border-line shadow-pill hover:border-ink focus-visible:ring-ink',
   };

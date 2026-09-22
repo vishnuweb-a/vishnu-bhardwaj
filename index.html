@@ -4,7 +4,49 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#FCFCFC" />
+    <meta
+      name="theme-color"
+      content="#FCFCFC"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#18181b"
+      media="(prefers-color-scheme: dark)"
+    />
+
+    <!--
+      Theme bootstrap. This runs synchronously in <head>, before the browser
+      paints anything and long before React mounts, which is the only way to
+      avoid a flash of the wrong theme: any class applied from a component
+      effect lands after the first paint has already shown the default.
+
+      The resolution order matches src/hooks/useTheme.js - stored choice, then
+      the OS preference, then light. The two are deliberately duplicated rather
+      than shared, because a module import here would defeat the point by
+      making this async. localStorage throws in some privacy modes, so the
+      whole thing is wrapped: a failure falls through to the light default
+      rather than blocking the page.
+    -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('portfolio-theme');
+          var theme =
+            stored === 'dark' || stored === 'light'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+          }
+          document.documentElement.style.colorScheme = theme;
+        } catch (error) {
+          /* No storage access - the light default in CSS stands. */
+        }
+      })();
+    </script>
     <title>Vishnu Bhardwaj - Backend Developer</title>
     <meta
       name="description"

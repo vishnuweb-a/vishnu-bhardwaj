@@ -2,7 +2,7 @@ const TONES = {
   // White floating pill with a hairline and the ambient lift.
   raised: 'bg-surface-raised text-ink border border-control',
   // Solid dark CTA.
-  solid: 'bg-pill text-white',
+  solid: 'bg-pill text-on-pill',
   // Flat chip on a light surface - tags and categories.
   outline: 'bg-transparent text-ink-muted border border-line',
   // White chip sitting on the card's --color-surface body.

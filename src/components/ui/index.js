@@ -4,3 +4,4 @@ export { Container } from './Container';
 export { MediaFrame } from './MediaFrame';
 export { Pill } from './Pill';
 export { SectionHeading } from './SectionHeading';
+export { ThemeToggle } from './ThemeToggle';

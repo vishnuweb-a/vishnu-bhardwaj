@@ -1,7 +1,17 @@
 @import 'tailwindcss';
 
+/* Dark mode is driven by a `dark` class on <html>, set before paint by the
+   inline bootstrap in index.html. The default `dark:` variant in v4 follows
+   prefers-color-scheme, which would ignore an explicit user choice, so it is
+   redefined here to follow the class instead. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* The redesign keeps Oswald for display text and uses a native sans for
-   reading. Portfolio data and asset colours remain in their source files. */
+   reading. Portfolio data and asset colours remain in their source files.
+
+   Every colour is a semantic token rather than a palette value, which is what
+   makes a second theme a stylesheet change rather than a sweep through every
+   component: the dark theme below rebinds these same names. */
 @theme {
   --color-canvas: #fafaf9;
   --color-surface: #f0f0ed;
@@ -18,6 +28,7 @@
   --color-on-panel: #f8f8f8;
   --color-on-panel-muted: #b8b8b8;
   --color-pill: #161616;
+  --color-on-pill: #ffffff;
   --color-accent: #31815b;
   --font-body: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --font-display:
@@ -27,11 +38,61 @@
   --text-display-md: clamp(1.75rem, 3vw, 2.5rem);
   --text-display-sm: clamp(1.75rem, 3.2vw, 2.75rem);
   --shadow-pill: 0 2px 5px rgb(0 0 0 / 0.03);
+
+  /* The dark grid. Cell size and line opacity are tokens because they are
+     tuned by eye against the reference and are read in two places below. */
+  --grid-cell: 32px;
+  --grid-line: rgb(255 255 255 / 0.035);
+}
+
+/* Dark theme - a zinc-neutral ramp, not an inversion. The light theme's
+   relationships are preserved: `canvas` stays the page ground, `surface-raised`
+   stays the lifted card, and `ink` stays the highest-contrast text. Only the
+   direction of the ramp flips.
+
+   The inverted `panel` tokens are the one place the two themes converge. In
+   light mode a near-black panel is a deliberate contrast device; against a
+   zinc-900 page it would disappear, so in dark mode it lifts to zinc-800 and
+   keeps reading as a distinct surface. */
+.dark {
+  --color-canvas: #18181b; /* zinc-900 - the page ground */
+  --color-surface: #202023; /* recessed chips and media wells */
+  --color-surface-raised: #1f1f22; /* cards, lifted above the grid */
+  --color-ink: #fafafa; /* zinc-50 - primary text */
+  --color-ink-muted: #a1a1aa; /* zinc-400 - secondary text */
+  /* Lighter than the zinc-500 the palette would suggest: zinc-500 on a
+     zinc-900 ground measures 3.67:1, under the 4.5:1 this tier needs for the
+     body text it carries. It still reads as the quietest of the three text
+     tiers. */
+  --color-ink-subtle: #8b8b93; /* 5.24:1 on canvas - muted labels */
+  --color-line: #2a2a2e; /* dividers and hairlines */
+  /* Borders on interactive controls are UI, so they are held to 3:1. */
+  --color-control: #6b6b75; /* >=3:1 on every dark surface - control borders */
+  --color-portrait: #26262a; /* the hero's portrait ground */
+  --color-panel: #27272a; /* zinc-800 - the inverted panel */
+  --color-panel-ghost: #3a3a3f; /* the watermark inside that panel */
+  --color-panel-line: #3f3f46;
+  --color-on-panel: #fafafa;
+  --color-on-panel-muted: #a1a1aa;
+  --color-pill: #fafafa; /* the solid CTA inverts with the theme */
+  --color-on-pill: #18181b;
+  --color-accent: #4ade80; /* lifted for contrast on a dark ground */
+  /* The light theme's shadow is invisible on a dark ground; a hairline of
+     light reads as elevation instead. */
+  --shadow-pill: 0 0 0 1px rgb(255 255 255 / 0.04);
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* Paints the correct ground behind rubber-band overscroll and tells the
+       browser which UA widget palette to use for scrollbars and form
+       controls. */
+    background-color: var(--color-canvas);
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
   }
   body {
     background-color: var(--color-canvas);
@@ -42,6 +103,21 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
+
+  /* The dark grid, from the reference. It is painted on <body> rather than a
+     fixed overlay element so it cannot sit above content or intercept a
+     pointer, and `background-attachment: fixed` keeps the lines anchored to
+     the viewport while the page scrolls instead of sliding with it.
+
+     Light mode has no grid treatment, so this is scoped to .dark. */
+  .dark body {
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: var(--grid-cell) var(--grid-cell);
+    background-attachment: fixed;
+  }
+
   /* Leave space for the persistent navigation when following section links. */
   section[id] {
     scroll-margin-top: 6rem;
@@ -63,6 +139,28 @@
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
+
+  /* Theme-change transition. Enumerated properties only - never `all`, and no
+     layout properties, so switching themes cannot reflow the page.
+
+     It is gated on a class the toggle applies for the duration of the switch:
+     a permanent rule would make every hover that changes a colour fade at
+     200ms instead of the 150-200ms the components already specify, and would
+     animate the first paint on load. */
+  .theme-transition,
+  .theme-transition *,
+  .theme-transition *::before,
+  .theme-transition *::after {
+    transition:
+      background-color 200ms ease,
+      border-color 200ms ease,
+      color 200ms ease,
+      fill 200ms ease,
+      stroke 200ms ease,
+      box-shadow 200ms ease,
+      outline-color 200ms ease;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
