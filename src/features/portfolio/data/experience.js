@@ -19,15 +19,15 @@ export const experience = [
     ],
   },
   {
-    // Web Bites is the spelling in the new brief; retain the existing role ID.
+    // Webytes is the owner's confirmed spelling; retain the existing role ID.
     id: 'web-bytes',
-    organisation: 'Web Bites',
+    organisation: 'Webytes',
     role: 'Tech lead',
     period: 'June 2026 - Present',
     category: 'Technical Leadership / Web',
     context: 'Frontend engineering · Team coordination · Technical execution',
     timeline: 'LEAD',
-    timelineLabel: 'Web Bites',
+    timelineLabel: 'Webytes',
     detail:
       'Leading web-related technical work, helping structure implementation decisions and supporting the team in turning ideas into working interfaces.',
     technologies: ['React', 'Frontend', 'UI Engineering', 'Team Leadership'],
