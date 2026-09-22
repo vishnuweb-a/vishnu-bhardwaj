@@ -11,6 +11,56 @@
    invert every `dark:` variant in the components for no benefit. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* The complete viewport pins; only its outer zone adds document travel.
+   Stable viewport units avoid jumps as mobile browser chrome collapses. */
+.projects-scroll-zone {
+  height: calc(100svh + var(--project-steps) * 85svh);
+}
+.projects-sticky-screen {
+  height: 100svh;
+}
+.projects-screen-content {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100%;
+  gap: clamp(12px, 3svh, 32px);
+  padding-block: max(20px, env(safe-area-inset-top))
+    max(16px, env(safe-area-inset-bottom));
+}
+.project-card {
+  width: min(100%, 800px);
+  height: min(100%, 460px);
+  justify-self: center;
+}
+.project-physics,
+.project-visual {
+  will-change: transform;
+}
+.project-visual {
+  will-change: transform, opacity;
+}
+.project-physics[data-dragging] * {
+  cursor: grabbing;
+}
+@media (max-height: 700px) {
+  .projects-header h2 {
+    font-size: 1.5rem;
+  }
+  .project-title {
+    font-size: 2rem;
+  }
+  .project-content {
+    padding: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .project-physics,
+  [data-project-visual] {
+    transform: none !important;
+    will-change: auto;
+  }
+}
+
 /* The redesign keeps Oswald for display text and uses a native sans for
    reading. Portfolio data and asset colours remain in their source files.
 

@@ -1,53 +1,67 @@
-import shipBihar from '@/assets/images/ship-bihar-card.webp';
-import yarnvia from '@/assets/images/yarnvia-card.webp';
-
-// The accordion rows (design.md section 10). `media` names the work sample that
-// overhangs the expanded panel.
-//
-// Both frames are 16:9 and both samples are the 16:9 composition built by
-// scripts/build-assets.py, so the device sits whole on its own ground with no
-// crop at all.
-//
-// The samples are shipped work by the owner that exercises the service being
-// described, not diagrams of it: ShipBihar is the Node/Express service with the
-// JWT layer and the RabbitMQ pipeline, and the commerce platform is the one
-// that runs in production behind its own domain. The card is decorative and
-// aria-hidden, so it makes no claim in text; only one panel is open at a time,
-// so a sample appearing under two related services is never seen twice at once.
 export const services = [
   {
+    id: 'web',
+    category: '01 / Product Engineering',
+    title: ['Full-stack web', 'development.'],
+    description:
+      'Fast, responsive and scalable web products — from landing experiences to dashboards, portals and complete SaaS platforms.',
+    technologies: ['React', 'Next.js', 'TypeScript', 'Tailwind', 'Node.js'],
+    span: 'md:col-span-7',
+  },
+  {
     id: 'backend',
-    title: 'Backend Engineering',
+    category: '02 / Backend',
+    title: ['Backend systems', '& APIs.'],
     description:
-      'REST APIs, authentication and authorisation, JWT with refresh rotation, RBAC and session handling - built on Node, Express and FastAPI.',
-    media: shipBihar,
-    mediaAlt: 'ShipBihar, the REST and authentication backend',
+      'Secure APIs, authentication, databases, RBAC, integrations and backend workflows built for real application use.',
+    technologies: ['Node.js', 'FastAPI', 'Supabase', 'PostgreSQL'],
+    span: 'md:col-span-5',
   },
   {
-    id: 'distributed',
-    title: 'Distributed Systems',
+    id: 'ai',
+    category: '03 / Intelligence',
+    title: ['AI apps', '& agents.'],
     description:
-      'RabbitMQ and Redis-backed queues, asynchronous processing pipelines and microservice boundaries that keep slow work off the request path.',
-    media: shipBihar,
-    mediaAlt: 'ShipBihar, whose shipment pipeline runs on RabbitMQ',
+      'AI-powered products using LLMs, RAG, intelligent workflows, agents, analysis pipelines and automation.',
+    technologies: ['LLMs', 'Gemini', 'RAG', 'Agents'],
+    span: 'md:col-span-5',
   },
   {
-    id: 'data',
-    title: 'Data & Caching',
+    id: 'mobile',
+    category: '04 / Mobile',
+    title: ['Mobile apps', 'that feel native.'],
     description:
-      'Schema design across MongoDB, PostgreSQL and MySQL, Redis caching and atomic counters, and query paths that stay fast as the table grows.',
-    media: yarnvia,
-    mediaAlt: 'The commerce platform this catalogue and cart layer serves',
+      'Cross-platform mobile experiences with authentication, realtime data and backend integration.',
+    technologies: ['React Native', 'Expo', 'Clerk', 'Supabase'],
+    span: 'md:col-span-7',
   },
   {
-    id: 'infrastructure',
-    title: 'Deployment & Infrastructure',
+    id: 'ui',
+    category: '05 / Interface',
+    title: ['Frontend & UI implementation'],
     description:
-      'Ubuntu servers, Docker, AWS EC2 and S3, reverse proxies, DNS and domain configuration - taking an application from a repository to a running host.',
-    media: yarnvia,
-    mediaAlt:
-      'The commerce platform running in production behind its own domain',
+      'Turning designs into responsive, polished, production-ready interfaces.',
+    span: 'md:col-span-6',
   },
+  {
+    id: 'workflows',
+    category: '06 / Automation',
+    title: ['Integrations & workflows'],
+    description:
+      'Connecting APIs, services and automation into reliable product workflows.',
+    span: 'md:col-span-6',
+  },
+];
+
+export const serviceTechnologies = [
+  'Web Development',
+  'AI Products',
+  'Mobile Apps',
+  'Backend Systems',
+  'Supabase',
+  'API Integrations',
+  'React',
+  'TypeScript',
 ];
 
 export default services;
