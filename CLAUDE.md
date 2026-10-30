@@ -185,7 +185,6 @@ src/
 ├── app/                  Application shell
 │   ├── App.jsx           Root component
 │   ├── main.jsx          React DOM mount
-│   ├── config/           appConfig, env-var reads
 │   ├── providers/        AppProviders (placeholder passthrough)
 │   └── routes/           Route table (placeholder — no router installed)
 ├── animations/           Centralized Anime.js layer
@@ -204,7 +203,7 @@ src/
 ├── layouts/              MainLayout (header / main / footer)
 ├── lib/                  Shared libraries that fit nowhere else
 ├── pages/                Page components — Home/, NotFound/
-├── services/             API layer — services/api/client.js
+├── services/             API layer (placeholder, empty)
 ├── store/                Global state (empty; none installed)
 ├── styles/               index.css — the only global stylesheet
 └── utils/                constants.js, helpers.js
@@ -257,8 +256,7 @@ Import across features only through the other feature's `index.js`.
   indent, ES5 trailing commas, LF endings. Run `npm run format` before finishing.
 - **Comments explain *why*, not *what*.** Match the density of existing files —
   `useAnimation.js` and `animationUtils.js` are the reference for tone.
-- **Environment variables** are read through `src/app/config/index.js` or
-  `src/utils/constants.js`, never inline via `import.meta.env` in components.
+- **Environment variables** are read through `src/utils/constants.js`, never inline via `import.meta.env` in components.
 - **No emojis** in code, markup, copy, or alt text.
 
 ---

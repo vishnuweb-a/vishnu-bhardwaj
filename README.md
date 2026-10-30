@@ -66,17 +66,6 @@ Check Prettier formatting:
 npm run format:check
 ```
 
-## Environment Variables
-
-Copy `.env.example` to `.env` and configure:
-
-```env
-VITE_APP_NAME=Portfolio
-VITE_APP_ENV=development
-VITE_API_URL=http://localhost:3000
-VITE_ENABLE_ANIMATIONS=true
-```
-
 ## Project Structure
 
 ```
@@ -98,7 +87,6 @@ src/
 ├── hooks/            # Custom React hooks
 ├── layouts/          # Page layouts
 ├── pages/            # Page components
-├── services/         # API and external services
 ├── store/            # Global state management
 ├── styles/           # Global stylesheet (index.css)
 ├── utils/            # Utility functions
@@ -134,21 +122,6 @@ Primitive, generic components live in `src/components/ui/`:
 - Accessible and keyboard-friendly
 - No business logic
 - Highly composable
-
-### API Layer
-
-All API calls go through `src/services/api/client.js`:
-
-- Centralized HTTP client
-- Easy to replace/mock
-- Consistent error handling
-
-### Configuration
-
-Application configuration is centralized:
-
-- Environment variables via `.env`
-- `src/app/config/index.js` for configuration objects
 
 ## Animation Architecture
 
@@ -249,8 +222,7 @@ than 404ing at runtime, and every file is content-hashed. Never write a raw
 ## Deployment
 
 `npm run build` emits a static site to `dist/`. There is no server component and
-no runtime environment variable - `.env` only feeds the unused scaffold in
-`src/app/config/` and `src/services/`, and nothing from it reaches the bundle.
+no runtime environment variable.
 
 **The one host-side requirement is an SPA rewrite.** The site uses
 `createBrowserRouter`, so `/project/<slug>` is a real URL with no matching file

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { THEME_STORAGE_KEY, THEMES } from '@/utils/constants';
 
 // Reads the class the inline bootstrap in index.html already applied, rather
@@ -34,29 +34,43 @@ const storeTheme = (theme) => {
  */
 export const useTheme = () => {
   const [theme, setTheme] = useState(readAppliedTheme);
+  // Set by the toggle handler, never by the updater, so the effect below can
+  // tell an explicit choice from the initial mount. Without it the first visit
+  // would persist the dark default as if the visitor had picked it.
+  const toggledRef = useRef(false);
 
-  // Applying the class in an effect rather than in the toggle handler keeps
-  // the DOM derived from state, so the two cannot drift apart.
+  // The DOM, storage and transition window are all derived from state here, so
+  // the updater in toggleTheme stays pure (StrictMode double-invokes updaters).
   useEffect(() => {
     const root = document.documentElement;
     root.classList.toggle('dark', theme === THEMES.dark);
     root.style.colorScheme = theme;
+
+    if (!toggledRef.current) {
+      return undefined;
+    }
+    storeTheme(theme);
+
+    // The transition rule is enabled only around the switch itself, so it
+    // colours the theme change without slowing down every hover afterwards.
+    // The timeout matches the 200ms in src/styles/index.css. Cleanup restarts
+    // the window on a rapid second toggle and clears it on unmount.
+    root.classList.add('theme-transition');
+    const timer = window.setTimeout(
+      () => root.classList.remove('theme-transition'),
+      220
+    );
+    return () => {
+      window.clearTimeout(timer);
+      root.classList.remove('theme-transition');
+    };
   }, [theme]);
 
   const toggleTheme = useCallback(() => {
-    setTheme((current) => {
-      const next = current === THEMES.dark ? THEMES.light : THEMES.dark;
-      storeTheme(next);
-
-      // The transition rule is enabled only around the switch itself, so it
-      // colours the theme change without slowing down every hover afterwards.
-      // The timeout matches the 200ms in src/styles/index.css.
-      const root = document.documentElement;
-      root.classList.add('theme-transition');
-      window.setTimeout(() => root.classList.remove('theme-transition'), 220);
-
-      return next;
-    });
+    toggledRef.current = true;
+    setTheme((current) =>
+      current === THEMES.dark ? THEMES.light : THEMES.dark
+    );
   }, []);
 
   return { theme, isDark: theme === THEMES.dark, toggleTheme };
